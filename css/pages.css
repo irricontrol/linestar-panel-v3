@@ -1,0 +1,379 @@
+/* Page-specific layout that doesn't belong in the shared component set. */
+
+/* ---- Config hub (System / GPS / ... chooser) ---- */
+/* Side buttons flanking the .section-tabs bar — step to the next/previous
+   item and jump straight into it. Sized by the grid track in the pages
+   that use hubBar() (101px), not by width here — bigger/easier to tap
+   than the tab cells themselves. */
+/* Metallic 3D shell — same neutral-gray glass recipe as nav-btn/op-summary__arrow,
+   with the raised-bezel + press-down depth on top of the flat card it replaces. */
+.hub-nav-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 6px 14px rgba(15, 23, 42, .25),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.hub-nav-arrow::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: 0;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  pointer-events: none;
+}
+.hub-nav-arrow.btn-touch:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.hub-nav-arrow.btn-touch:active::before {
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+.hub-nav-arrow > * {
+  position: relative;
+  z-index: 1;
+}
+.hub-nav-arrow svg {
+  stroke: #4e5c47;
+}
+
+/* ---- Alarms ---- */
+/* Top padding matches the Config hub pages exactly (8px, see
+   ST.pages.config's own `.page` wrapper) so this bar sits at the same
+   height as theirs — same .hub-nav-arrow + .section-tabs shape too. */
+.alarms-page { flex-direction: column; padding: 8px 28px 21px; gap: 15px; }
+.alarms-page__type-bar {
+  display: grid;
+  grid-template-columns: 101px minmax(0, 1fr) 101px;
+  align-items: stretch;
+  gap: 12px;
+}
+.alarms-page__body { flex: 1; display: flex; gap: 21px; min-height: 0; }
+.alarms-page__list-col { flex: 1; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.alarms-page__list { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; }
+.alarms-page__empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-muted); }
+.alarms-page__pager { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 120px; }
+.alarms-page__pager-label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+/* Metallic 3D shell — same neutral-gray glass recipe as nav-btn, with the
+   raised-bezel + press-down depth on top (taller than the flat pill it
+   replaces). */
+.alarm-pager-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 21px;
+  border-radius: var(--radius-md);
+  background-color: rgb(240 240 240 / 69%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  font-size: 15px;
+  font-weight: 700;
+  color: #5b6167;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(200, 208, 216, .5),
+    0 5px 0 rgba(120, 130, 140, .7),
+    0 6px 10px rgba(30, 40, 50, .2);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+/* Next — green bottom edge + green text/icon, same idea as nav-btn's
+   active-state tint on top of the shared neutral shell above. */
+.alarm-pager-btn[data-action="alarm-page-next"],
+.alarm-pager-btn[data-action="alarm-page-prev"],
+.alarm-pager-btn[data-action="activity-log-page-next"],
+.alarm-pager-btn[data-action="activity-log-page-prev"] {
+  color: var(--accent-green-dark);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 140, 110, .2),
+    inset 0 -4px 6px rgba(120, 165, 140, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 6px 10px rgba(30, 40, 50, .2);
+}
+.alarm-pager-btn.btn-touch:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .25),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* No page further this way — same hinged glass hatch as Remove
+   Operation's disabled look (field-btn--for-remove-operation.is-disabled
+   in components.css), green-tinted glass with white text instead of the
+   red-tinted one. */
+.alarm-pager-btn.is-disabled {
+  position: relative;
+  overflow: visible;
+  cursor: default;
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(23, 122, 58, .85);
+}
+.alarm-pager-btn.is-disabled svg {
+  stroke: #ffffff;
+}
+.alarm-pager-btn.is-disabled::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e8ecef, #9aa3ab);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  z-index: 3;
+  pointer-events: none;
+}
+.alarm-pager-btn.is-disabled::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -6px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(220, 255, 235, .85) 0%, rgba(150, 225, 180, .35) 35%, rgba(110, 205, 160, .25) 60%, rgba(220, 255, 235, .6) 100%);
+  border: 1px solid rgba(220, 255, 235, .7);
+  border-top: 2px solid rgba(90, 180, 130, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  transform-origin: top center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Metallic shell — same neutral-gray glass recipe as the telemetry
+   kpi-card, layered on top of (not replacing) the colored left border
+   that still carries the alarm's type/severity. */
+.alarm-row {
+  background-color: rgb(248 248 248 / 79%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgb(216 216 216 / 55%);
+  border-top-color: rgb(224 224 224 / 60%);
+  border-left: 6px solid;
+  border-radius: var(--radius-md);
+  padding: 21px 21px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 4px 8px rgba(30, 40, 50, .12);
+  overflow: hidden;
+  position: relative;
+}
+.alarm-row__icon { width: 48px; height: 48px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.alarm-row__body { flex: 1; min-width: 0; }
+.alarm-row__title { font-size: 24px; font-weight: 700; letter-spacing: -.01em; color: var(--text-secondary); }
+.alarm-row__desc { font-size: 18px; color: var(--text-muted); margin-top: 2px; }
+.alarm-row__meta { text-align: right; flex-shrink: 0; }
+/* Small-caps timestamp instead of a plain same-weight line — reads as a
+   deliberate metadata label, not just a second title. */
+.alarm-row__time { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-faint); margin-top: 4px; }
+
+/* Error-type filter tabs (top bar, same .section-tab joined-bar shape as
+   the Config hub bar) — each cell also carries its filtered count. */
+.alarm-type-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  /* Shorter than the Config hub bar's own .section-tab padding — scoped
+     here so Config's bar stays untouched. */
+  padding: 15px 15px;
+}
+.alarm-type-tab__count {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 30px;
+  padding: 2px 8px;
+  border-radius: 21px;
+  background: rgba(0, 0, 0, .08);
+  text-align: center;
+  flex-shrink: 0;
+}
+.alarm-type-tab.is-active .alarm-type-tab__count { background: rgba(255, 255, 255, .25); }
+
+/* ---- Physical Panel (engineering diagram) ---- */
+.pf-diagram {
+  width: 600px; height: 530px;
+  background: var(--border); border: 2px solid #b6bcc2; border-radius: 26px;
+  position: relative; padding: 32px;
+}
+.pf-screen {
+  position: absolute; left: 139px; top: 32px; width: 320px; height: 200px;
+  background: var(--bg-app-2); border: 5px solid #14171a; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.pf-estop { position: absolute; left: 488px; top: 15px; width: 80px; height: 80px; }
+.pf-estop__ring {
+  width: 80px; height: 80px; border-radius: 50%; background: #7a1216; border: 4px solid #4a0c0f;
+  display: flex; align-items: center; justify-content: center;
+}
+.pf-estop__button { width: 52px; height: 52px; border-radius: 50%; background: var(--accent-red-dark); }
+.pf-selector {
+  position: absolute; left: 15px; top: 15px; width: 84px; height: 84px; border-radius: 15px;
+  background: var(--border); border: 1px solid #b6bcc2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.pf-side-btn {
+  position: absolute; border-radius: 14px; background: var(--border); border: 1px solid #b6bcc2;
+  display: flex; align-items: center; justify-content: center;
+}
+.pf-side-btn--horn { left: 15px; top: 178px; width: 84px; height: 66px; }
+.pf-side-btn--power { left: 488px; top: 178px; width: 80px; height: 66px; }
+.pf-action-btn {
+  position: absolute; width: 114px; height: 83px; border-radius: 14px; border: 2px solid;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.pf-action-btn--forward { left: 83px; top: 320px; background: #e2f5e7; border-color: var(--accent-green); }
+.pf-action-btn--stop { left: 244px; top: 320px; background: #fbe4e6; border-color: var(--accent-red-dark); }
+.pf-action-btn--reverse { left: 406px; top: 320px; background: #fbeedd; border-color: var(--accent-amber); }
+.pf-marker {
+  position: absolute; width: 25px; height: 25px; border-radius: 50%;
+  background: #f2f4f5; color: #14171a; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.pf-legend-row {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;
+}
+.pf-legend-row__num {
+  width: 26px; height: 26px; border-radius: 50%; color: #14171a;
+  font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+/* ---- Operations Review (Start Pivot's confirm gate, 2+ operations) ---- */
+/* One card at a time, flanked by the same prev/next arrows as Home's own
+   carousel — a fixed footer (Previous/Start Pivot) stays put below it. */
+.op-review-page { flex-direction: column; padding: 15px 28px 21px 12px; gap: 15px; }
+.op-review-carousel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  gap: 21px;
+}
+/* Setas absolutas para não empurrar o card — alinha com Home/Smart Irrigation */
+.op-review-carousel .op-summary__arrow--lg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.op-review-carousel .op-summary__arrow--lg:first-child { left: 0; }
+.op-review-carousel .op-summary__arrow--lg:last-child { right: 0; }
+/* Bigger than the stock .op-summary__arrow (76px) — this page fills a
+   tall carousel row instead of squeezing next to a short pill, so the
+   arrows can be easier to hit; the base class still carries the 3D
+   button treatment, is-disabled styling, etc. */
+.op-summary__arrow--lg { width: 95px; height: 95px; }
+/* Same footprint as Home's own .dial-card (430px dial + its 26/25px
+   padding) — the whole point of stacking one per row is seeing this
+   drawing at its normal size, not a shrunk-down preview. */
+.op-review-card {
+  width: 100%;
+  max-width: 420px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(26, 29, 31, .08);
+  /* Trimmed from Home's own 20/26/24/24 — just the padding/gaps around
+     the dial, never the dial itself (still the full 430px SVG). */
+  padding-top: 12px;
+  padding-bottom: 15px;
+  padding-left: 25px;
+  padding-right: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.op-review-card__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.op-review-card__title { font-size: 17px; font-weight: 700; color: var(--accent-green-dark); }
+.op-review-card__angle { font-size: 15px; font-weight: 700; color: var(--text-secondary); }
+/* Same grey backdrop as .dial-card everywhere else the pivot dial shows
+   up — without it, this card's plain white background left the dial's
+   white ring/ticks with nothing to contrast against outside the
+   irrigated band (invisible over most of the circle whenever the
+   preview wasn't close to a full sweep). */
+.op-review-card__dial {
+  line-height: 0;
+  background: linear-gradient(160deg, #eef0f3 0%, #d9dce1 100%);
+  border-radius: var(--radius-lg);
+}
+/* Duration/end time aren't computed anywhere in this offline panel — no
+   real clock, no speed-to-time model — so both stay "--" (same convention
+   as an unknown value elsewhere) rather than a fabricated number. */
+.op-review-card__estimate {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+/* Previous/Start Pivot — same .action-btn as Home's Stop/Start row, just
+   split to opposite corners instead of paired side by side: Previous
+   reads as "go back" (bottom-left, same spot every other page's own
+   Return lands roughly near), Start Pivot stays the primary action,
+   bottom-right, same as Home's own. */
+.op-review-footer { display: flex; justify-content: space-between; align-items: center; }
+.op-review-footer .action-btn { width: 280px; }
+/* Neutral gray — Previous isn't a destructive action (nothing's running
+   yet to stop), so it skips the red .action-btn--stop uses. */
+.action-btn--cancel { background-color: #6b7280; --btn-shadow-color: #4b5563; }

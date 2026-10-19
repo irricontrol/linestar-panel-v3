@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap');
+
+/* Kiosk touchscreen, not a phone browser — every tappable element here
+   is a styled <div data-action="...">, not a real <button>, so without
+   this the browser's default blue tap-flash/focus ring shows through on
+   every press (visible as a stray blue patch bleeding into buttons,
+   worst on repeated fast taps like the segment scroll arrows). */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+*:focus { outline: none; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  overflow: hidden;
+  background: linear-gradient(145deg, #f4f5f6 0%, #e3e6e9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ---- Outer bezel: prata cromado, efeito metal polido ---- */
+body::after {
+  content: "";
+  position: absolute;
+  width: 1099px;
+  height: 700px;
+  border-radius: 30px 32px 40px 40px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0px, rgba(255,255,255,.10) 1px, transparent 1px, transparent 4px),
+    linear-gradient(170deg,
+      #ffffff 0%,
+      #f4f5f7 10%,
+      #e8eaed 20%,
+      #d4d6da 35%,
+      #b8babd 45%,
+      #e0e2e5 55%,
+      #f8f9fa 65%,
+      #d8dade 75%,
+      #c4c6ca 85%,
+      #ffffff 100%);
+  border: 1px solid #e0e0e0;
+  box-shadow: inset 0 2px 3px rgb(177 177 177 / 60%), inset 0 -4px 6px rgb(62 62 62 / 45%), 0 18px 36px rgba(0, 0, 0, .28), 0 8px 16px rgb(100 100 100 / 38%);
+  pointer-events: none;
+  z-index: -3;
+  top: 50.8%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ---- Inner bezel: recesso escuro por cima da prata ---- */
+body::before {
+  content: "";
+  position: absolute;
+  width: 1056px;
+  height: 640px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #282828 0%, #202020 20%, #232323 50%, #101010 80%, #000000 100%);
+  border: 1px solid #1c2227;
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,.22),
+    inset 0 -3px 6px rgba(0,0,0,.45),
+    0 14px 28px rgba(0,0,0,.25),
+    0 4px 10px rgba(0,0,0,.15);
+  pointer-events: none;
+  z-index: -2;
+  top: 49.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { color: #0f5fc4; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

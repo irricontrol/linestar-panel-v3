@@ -1,0 +1,981 @@
+﻿<!doctype html>
+<html lang="en" data-theme="original">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartConnect V3 — Boot</title>
+
+<!-- Base panel styles -->
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/original-theme.css">
+
+<!-- Boot-specific styles -->
+<link rel="stylesheet" href="css/boot.css">
+
+<!-- Core V3 modules (needed for keypad) -->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/components.js"></script>
+</head>
+<body>
+
+<!--
+  Boot flow:
+    1. Boot screen   (effects + logo + progress)
+    2. Language      (EN / PT / ES selector)
+    3. Standby       (touch to wake)
+    4. Panel shell   (nav + topbar + black screen)
+-->
+
+<div class="app">
+
+  <!-- Sidebar (hidden until wake) -->
+  <div class="nav-rail" id="boot-nav" style="display:none;">
+    <div id="nav-buttons">
+      <div class="nav-btn" style="padding:10px 0;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7a828a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      </div>
+      <div class="nav-btn" style="padding:10px 0;">
+        <svg width="56" height="56" viewBox="0 0 170 163" fill="#7a828a" stroke="none"><g transform="translate(0,163) scale(0.1,-0.1)"><path d="M259 1412 c-27 -17 -27 -18 -8 -41 15 -18 17 -32 13 -62 -5 -30 -2 -44 11 -59 16 -17 17 -46 14 -350 -3 -218 -1 -330 6 -330 7 0 9 111 6 325 -2 179 0 325 4 325 3 0 13 -7 21 -15 8 -8 21 -12 28 -9 8 3 46 -11 85 -30 l71 -36 0 -262 c0 -144 3 -258 8 -254 4 4 5 117 3 251 -2 155 0 245 7 249 5 3 41 -7 78 -22 l69 -27 3 -173 c1 -95 6 -171 11 -168 4 3 6 77 3 166 -3 119 -2 160 7 160 26 0 107 -23 118 -34 10 -9 -12 -74 -100 -298 l-112 -287 -35 -1 c-84 -1 -134 -104 -95 -197 8 -19 15 -37 15 -39 0 -2 -66 -5 -147 -6 -140 -3 -148 -4 -148 -23 0 -20 8 -20 658 -23 l657 -2 0 25 0 25 -131 0 c-121 0 -131 1 -124 17 20 46 27 92 21 126 -9 49 -56 95 -102 99 l-37 3 -59 150 c-116 293 -121 308 -102 318 11 7 13 11 5 16 -16 10 -3 41 18 41 14 1 14 2 -1 14 -20 14 -24 36 -8 36 6 0 10 -4 10 -10 0 -5 7 -10 15 -10 23 0 37 -42 19 -56 -13 -10 -12 -12 2 -18 8 -3 23 -6 31 -6 15 0 15 2 -3 68 -6 21 -4 23 16 20 13 -1 31 -15 39 -29 9 -14 25 -39 36 -54 14 -20 16 -30 7 -33 -25 -8 7 -42 40 -42 25 0 28 3 19 14 -9 10 -8 16 3 25 12 10 16 8 21 -10 9 -26 -8 -39 -52 -39 -30 0 -58 -19 -31 -21 44 -3 201 2 209 7 13 8 12 2 -16 -72 -30 -79 -32 -103 -6 -54 15 29 25 36 55 38 34 3 37 1 56 -40 28 -60 14 -8 -23 86 -27 70 -37 84 -96 133 -112 93 -237 142 -363 143 -26 0 -49 4 -52 8 -3 5 32 64 78 133 45 68 90 135 99 149 l16 25 -243 0 c-241 0 -244 0 -233 -20 5 -11 46 -73 89 -138 44 -65 77 -121 75 -124 -3 -3 -29 4 -59 14 -50 18 -53 21 -58 58 -6 52 -37 62 -46 16 -4 -17 -9 -31 -13 -31 -3 0 -28 13 -56 28 -45 24 -51 31 -55 67 -4 32 -9 40 -25 40 -13 0 -21 -8 -23 -22 -2 -13 -9 -23 -15 -23 -17 0 -87 49 -87 60 0 6 -11 10 -24 10 -36 0 -47 21 -42 79 6 56 -1 61 -45 33z"/></g></svg>
+      </div>
+      <div class="nav-btn" style="padding:10px 0;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7a828a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>
+      </div>
+      <div class="nav-btn" style="padding:10px 0;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7a828a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+    </div>
+    <div class="nav-rail__spacer"></div>
+    <div class="nav-rail__footer">
+      <div class="nav-btn" style="padding:10px 0;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7a828a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-column">
+
+    <!-- Top bar (hidden until wake) -->
+    <div class="top-bar" id="boot-topbar" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+        <div class="top-bar__lang" style="margin-left:-10px;">EN</div>
+      </div>
+      <div class="top-bar__title" id="page-title">Pivot 05</div>
+      <div class="top-bar__right">
+        <div class="top-bar__power">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#177a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M15 8V2"/><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"/><path d="M9 8V2"/></svg>
+        </div>
+        <div class="top-bar__signal">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#177a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>
+        </div>
+        <div class="top-bar__clock">
+          <div class="top-bar__clock-time">14:32</div>
+          <div class="top-bar__clock-date">Aug 19, 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="keypad-slot"></div>
+
+    <!-- Content area -->
+    <div style="flex:1;position:relative;min-height:0;background:#000000;">
+
+      <!-- USB IMPORT OVERLAY (SpaceX-style loader) -->
+      <div class="usb-transfer-overlay" id="usb-transfer-overlay" style="display:none;">
+        <div class="usb-transfer-body">
+          <div class="usb-transfer-icon">
+            <img src="assets/icons/usb.svg" width="90" height="90" alt="" style="opacity:.75;">
+          </div>
+          <div class="usb-transfer-status" id="usb-transfer-status">Detecting USB device...</div>
+          <div class="usb-transfer-sub" id="usb-transfer-sub">SmartConnect V3</div>
+        </div>
+
+        <div class="usb-transfer-topbar">
+          <div class="usb-transfer-progress-wrap">
+            <div class="usb-transfer-progress-bar" id="usb-transfer-progress-bar"></div>
+            <div class="usb-transfer-progress-glow"></div>
+          </div>
+          <div class="usb-transfer-meta">
+            <span class="usb-transfer-label">USB IMPORT</span>
+            <span class="usb-transfer-pct" id="usb-transfer-pct">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. BOOT SCREEN -->
+      <div class="boot-base is-visible" id="boot-screen">
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+        <div class="boot-particle"></div>
+
+        <div class="boot-scanline"></div>
+
+        <div class="boot-logo">
+          <img src="assets/icons/Logo-Bauer-Group-60.svg" alt="Bauer Group">
+        </div>
+
+        <div class="boot-title">SmartConnect V3</div>
+        <div class="boot-version">V 3.0.1 &middot; BUILD 2026.08.19</div>
+
+        <div class="boot-progress">
+          <div class="boot-progress__bar"></div>
+        </div>
+        <div class="boot-status" id="boot-status">Initializing...</div>
+      </div>
+
+      <!-- 2. LANGUAGE SELECTOR -->
+      <div class="lang-screen" id="lang-screen">
+        <div class="lang-screen__title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4e5c47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </div>
+        <div class="lang-screen__picker">
+          <div class="lang-screen__viewport">
+            <div class="lang-screen__list" id="lang-list">
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="EN">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">English</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="PT">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Português</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="ES">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Español</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="FR">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Français</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="DE">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Deutsch</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="IT">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Italiano</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="RU">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">Русский</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="ZH">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">中文</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="JA">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">日本語</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="KO">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">한국어</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="AR">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">العربية</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dual-toggle" style="--btn-h:72px;width:280px;">
+                <div class="dual-toggle__housing btn-touch lang-btn" data-lang="HI">
+                  <div class="dual-toggle__face is-off">
+                    <span class="dual-toggle__value">हिन्दी</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lang-screen__scroll-col">
+            <div class="lang-scroll-btn btn-touch" data-dir="up" aria-label="Scroll up">
+              <div class="lang-scroll-face">
+                <span style="display:inline-flex;transform:rotate(180deg);"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#4e5c47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg></span>
+              </div>
+            </div>
+            <div class="lang-scroll-btn btn-touch" data-dir="down" aria-label="Scroll down">
+              <div class="lang-scroll-face">
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#4e5c47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SETUP MODE SELECTOR (Auto / Manual) -->
+      <div class="setup-mode-screen" id="setup-mode-screen" style="display:none;position:absolute;inset:0;background:linear-gradient(180deg,#e8eaed 0%,#d0d4da 50%,#b8bec6 100%);z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:40px;padding:40px;">
+        <div class="setup-mode-title">Setup Mode</div>
+        <div style="display:flex;gap:28px;max-width:900px;width:100%;">
+          <!-- Automatic -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px;align-items:center;">
+            <div class="setup-mode-card btn-touch" data-action="setup-mode-auto">
+              <div class="setup-mode-card__face">
+                <img src="assets/icons/usb.svg" width="130" height="130" alt="" style="position:relative;z-index:1;">
+                <div class="setup-mode-card__name">Import via USB</div>
+              </div>
+            </div>
+          </div>
+          <!-- Divider -->
+          <div class="setup-mode-divider"></div>
+          <!-- Manual -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px;align-items:center;">
+            <div class="setup-mode-card btn-touch" data-action="setup-mode-manual">
+              <div class="setup-mode-card__face">
+                <img src="assets/icons/manual.svg" width="130" height="130" alt="" style="position:relative;z-index:1;">
+                <div class="setup-mode-card__name">Configure manually</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setup-mode-hint">Select how you want to configure your machine</div>
+      </div>
+
+      <!-- 4. EQUIPMENT SELECTOR -->
+      <div class="equipment-screen" id="equipment-screen">
+        <div class="equipment-screen__title">Select Equipment</div>
+        <div class="equipment-grid">
+          <div class="equipment-card" data-equip="center-pivot">
+            <img class="equipment-card__img" src="assets/icons/center.png" alt="Center Pivot">
+            <div class="equipment-card__name">Center Pivot</div>
+          </div>
+          <div class="equipment-card" data-equip="bender">
+            <img class="equipment-card__img" src="assets/icons/bender.png" alt="Bender">
+            <div class="equipment-card__name">Bender</div>
+          </div>
+          <div class="equipment-card" data-equip="linestar">
+            <img class="equipment-card__img" src="assets/icons/Linestar.jpg" alt="Linestar">
+            <div class="equipment-card__name">Linestar</div>
+          </div>
+          <div class="equipment-card" data-equip="centerline">
+            <img class="equipment-card__img" src="assets/icons/centerline.jpg" alt="Centerline">
+            <div class="equipment-card__name">Centerline</div>
+          </div>
+        </div>
+        <div class="equipment-screen__footer">
+          <div class="clear-screen-btn btn-touch equip-return-btn">
+            <div class="clear-screen-btn__face">Return</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. CENTER PIVOT SETUP (General -> Connectivity) -->
+      <div class="setup-screen" id="setup-screen">
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+            <div class="top-bar__lang" id="setup-lang-btn" style="margin-left:-10px;">EN</div>
+          </div>
+          <div class="top-bar__title">General</div>
+          <div class="top-bar__right">
+            <div class="top-bar__power"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#177a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M15 8V2"/><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"/><path d="M9 8V2"/></svg></div>
+            <div class="top-bar__signal" id="boot-topbar-signal"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#177a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
+            <div class="top-bar__clock">
+              <div class="top-bar__clock-time">14:00</div>
+              <div class="top-bar__clock-date">Oct 8, 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section tabs (hub bar) -->
+        <div style="display:grid;grid-template-columns:90px minmax(0,1fr) 90px;align-items:stretch;gap:12px;padding:8px 28px 0;">
+          <div class="dual-toggle__housing btn-touch" data-action="setup-hub-left" aria-label="Previous" style="width:90px;height:80px;display:flex;align-items:center;justify-content:center;">
+            <div class="dual-toggle__face is-off" style="justify-content:center;align-items:center;">
+              <span style="display:inline-flex;transform:rotate(90deg);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4e5c47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg></span>
+            </div>
+          </div>
+
+          <div class="section-tabs" id="setup-section-tabs">
+            <div class="section-tab btn-touch is-active" data-tab="general">General</div>
+            <div class="section-tab btn-touch" data-tab="pumping">Pumping</div>
+            <div class="section-tab btn-touch" data-tab="connectivity">Connectivity</div>
+          </div>
+
+          <div class="dual-toggle__housing btn-touch" data-action="setup-hub-right" aria-label="Next" style="width:90px;height:80px;display:flex;align-items:center;justify-content:center;">
+            <div class="dual-toggle__face is-off" style="justify-content:center;align-items:center;">
+              <span style="display:inline-flex;transform:rotate(-90deg);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4e5c47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- General panel -->
+        <div class="setup-tab-panel is-active" data-tab-panel="general" style="display:flex;flex:1;">
+          <!-- Vertical tabs + body -->
+          <div style="flex:1;display:flex;gap:30px;padding:12px 28px 100px;">
+          <div class="v-tabs">
+            <div class="v-tab btn-touch is-active" data-vtab="datasheet" title="Datasheet">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+            </div>
+            <div class="v-tab btn-touch" data-vtab="rain" title="Rain Gauge">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
+            </div>
+            <div class="v-tab btn-touch" data-vtab="autorev" title="Auto-reversal">
+              <svg width="36" height="36" viewBox="-1.5 -2.5 24 24" fill="currentColor" stroke="none"><path d="M4.859 5.308l1.594-.488a1 1 0 0 1 .585 1.913l-3.825 1.17a1 1 0 0 1-1.249-.665L.794 3.413a1 1 0 1 1 1.913-.585l.44 1.441C5.555.56 10.332-1.035 14.573.703a9.381 9.381 0 0 1 5.38 5.831 1 1 0 1 1-1.905.608A7.381 7.381 0 0 0 4.86 5.308zm12.327 8.195l-1.775.443a1 1 0 1 1-.484-1.94l3.643-.909a.997.997 0 0 1 .61-.08 1 1 0 0 1 .84.75l.968 3.88a1 1 0 0 1-1.94.484l-.33-1.322a9.381 9.381 0 0 1-16.384-1.796l-.26-.634a1 1 0 1 1 1.851-.758l.26.633a7.381 7.381 0 0 0 13.001 1.25z"/></svg>
+            </div>
+            <div class="v-tab btn-touch" data-vtab="protection" title="Protection and Restart">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M15 8V2"/><path d="M17 8a1 1 0 0 1 1 1v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1z"/><path d="M9 8V2"/></svg>
+            </div>
+          </div>
+
+          <div style="flex:1;display:flex;min-width:0;overflow-y:auto;" id="setup-body">
+            <!-- Datasheet -->
+            <div class="setup-panel is-active" data-panel="datasheet">
+              <div class="datasheet-grid" style="flex:0 0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;align-content:start;">
+                <div class="field field--config field--compact">
+                  <div class="field__label">Equipment Name</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-equipment-name">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value">—</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Equipment Manufacturer</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="cycle-equipment-manufacturer">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">Bauer</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Equipment Language</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="cycle-equipment-language">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">English</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Radius to Last Tower</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-dist-to-last-tower">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">0.0 m</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Last Tower Speed</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-end-tower-speed">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">0.0 m/h</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Flow Rate</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-pumping-flow-rate">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">0 m³/h</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Total Irrigated Radius</div>
+                  <div class="dual-toggle" style="--btn-h:70px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-irrigation-radius">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">0.0 m</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Maximum Working Angle</div>
+                  <div class="dual-toggle" style="--btn-h:70px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-max-working-angle">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value">0 °</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Irrigated Area</div>
+                    <div class="flat-readout" style="height:66px;padding:0 20px 0 8px;border-radius:10px;display:flex;align-items:center;justify-content:flex-start;font-size:30px;font-weight:700;">0.00 ha</div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Center Position</div>
+                  <div class="dual-toggle" style="--btn-h:70px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-center-lat">
+                      <div class="dual-toggle__face is-off" style="font-size:17px;">
+                        <span class="dual-toggle__value">Lat:</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="dual-toggle" style="--btn-h:70px;margin-top:6px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-center-lng">
+                      <div class="dual-toggle__face is-off" style="font-size:17px;">
+                        <span class="dual-toggle__value">Lng:</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Zero Angle Position</div>
+                  <div class="dual-toggle" style="--btn-h:70px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-zero-angle-lat">
+                      <div class="dual-toggle__face is-off" style="font-size:17px;">
+                        <span class="dual-toggle__value">Lat:</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="dual-toggle" style="--btn-h:70px;margin-top:6px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="open-zero-angle-lng">
+                      <div class="dual-toggle__face is-off" style="font-size:17px;">
+                        <span class="dual-toggle__value">Lng:</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rain Gauge -->
+            <div class="setup-panel" data-panel="rain" style="display:none;">
+              <div style="flex:1;display:flex;flex-direction:column;gap:26px;">
+                <div style="display:flex;align-items:center;gap:16px;">
+                  <div class="field-label">Enable Rain Gauge</div>
+                  <div class="dual-toggle" style="--btn-h:56px;width:100px;">
+                    <div class="dual-toggle__housing btn-touch" id="setup-rain-toggle" data-action="toggle-rain-gauge-enabled">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value" id="setup-rain-toggle-text" style="font-size:22px;">Off</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="setup-rain-fields" style="opacity:.6;pointer-events:none;transition:opacity .2s ease;">
+                  <div style="max-width:300px;">
+                    <div class="field field--config field--compact">
+                      <div class="field__label">Sensor Scale</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                        <div class="dual-toggle__housing btn-touch" data-action="open-rain-gauge-sensor-scale">
+                          <div class="dual-toggle__face is-off">
+                            <span class="dual-toggle__value">0 mm</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;max-width:620px;margin-top:26px;">
+                    <div class="field field--config field--compact">
+                      <div class="field__label">Stop Condition</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                        <div class="dual-toggle__housing btn-touch" data-action="cycle-rain-gauge-stop-condition">
+                          <div class="dual-toggle__face is-off">
+                            <span class="dual-toggle__value" id="setup-rain-stop-condition">Not Configured</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="field field--config field--compact" id="setup-rain-value-field" style="display:none;">
+                      <div class="field__label">Value</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                        <div class="dual-toggle__housing btn-touch" data-action="open-rain-gauge-value">
+                          <div class="dual-toggle__face is-off">
+                            <span class="dual-toggle__value">0 mm</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto-reversal -->
+            <div class="setup-panel" data-panel="autorev" style="display:none;">
+              <div style="flex:1;display:flex;flex-direction:column;gap:26px;">
+                <div style="display:flex;align-items:center;gap:16px;">
+                  <div class="field-label">Enable Auto-reversal</div>
+                  <div class="dual-toggle" style="--btn-h:56px;width:100px;">
+                    <div class="dual-toggle__housing btn-touch" id="setup-autorev-toggle" data-action="toggle-general-auto-reversal-enabled">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value" id="setup-autorev-toggle-text" style="font-size:22px;">Off</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="setup-autorev-fields" style="display:flex;flex-direction:column;gap:26px;max-width:620px;opacity:.4;pointer-events:none;transition:opacity .2s ease;">
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Stop Condition</div>
+                    <div style="display:flex;gap:12px;">
+                      <div class="dual-toggle__housing is-disabled" id="setup-autorev-limit" style="flex:1;height:72px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;">
+                        <div class="dual-toggle__face is-on">
+                          <span class="dual-toggle__value">By Limit Switch</span>
+                        </div>
+                      </div>
+                      <div class="dual-toggle__housing is-disabled" id="setup-autorev-angle" style="flex:1;height:72px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">By Angle</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="field field--config field--compact" style="max-width:340px;">
+                    <div class="field__label">Wait Time for Auto-reversal</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="cycle-general-auto-reversal-wait-time">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">30 seconds</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Protection and Restart -->
+            <div class="setup-panel" data-panel="protection" style="display:none;">
+              <div style="flex:1;display:flex;flex-direction:column;gap:26px;">
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;max-width:1100px;">
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Power Time</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="setup-open-protection-power-time">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">0 min</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Operating Voltage</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="toggle-protection-operating-voltage-phase">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">Single-phase</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Network Frequency</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="toggle-protection-network-frequency">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">50 Hz</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:16px;">
+                  <div class="field-label">Voltage Controller</div>
+                  <div class="dual-toggle" style="--btn-h:56px;width:100px;">
+                    <div class="dual-toggle__housing btn-touch" id="setup-prot-voltage-toggle" data-action="toggle-protection-voltage-controller">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value" id="setup-prot-voltage-text" style="font-size:22px;">Off</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="setup-prot-voltage-fields" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;align-items:end;opacity:.6;pointer-events:none;transition:opacity .2s ease;">
+                  <div class="field field--config field--compact" style="justify-content:flex-end;">
+                    <div class="field__label" style="font-size:21px;">Minimum Operating Voltage</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="setup-open-protection-min-voltage">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">0 V</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact" style="justify-content:flex-end;">
+                    <div class="field__label" style="font-size:21px;">Maximum Operating Voltage</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="setup-open-protection-max-voltage">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">0 V</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact" style="justify-content:flex-end;">
+                    <div class="field__label">Time Limit</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="setup-open-protection-time-limit">
+                        <div class="dual-toggle__face is-off">
+                          <span class="dual-toggle__value">0 min</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- Pumping panel -->
+        <div class="setup-tab-panel" data-tab-panel="pumping" style="display:none;flex:1;flex-direction:column;padding:12px 28px 100px;overflow-y:auto;">
+          <div style="flex:1;display:flex;flex-direction:column;gap:18px;min-height:0;">
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end;">
+              <div class="field field--config field--compact">
+                <div class="field__label">Electric Power</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-electric-power">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0.0 kW</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Voltage</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-voltage">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0 V</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Pivot Center Distance</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-pivot-center-distance">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0 m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end;">
+              <div class="field field--config field--compact">
+                <div class="field__label">Pressure Reading</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="cycle-pumping-pressure-reading">
+                    <div class="dual-toggle__face is-off">
+                       <span class="dual-toggle__value" id="boot-pump-pressure-val">Off</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Flow Rate</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-flow-rate">
+                    <div class="dual-toggle__face is-off">
+                       <span class="dual-toggle__value">0 m³/h</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Irrigation Rate 100%</div>
+                <div class="flat-readout" style="height:66px;padding:0 20px;border-radius:10px;display:flex;align-items:center;justify-content:flex-start;font-size:30px;font-weight:700;">0 mm</div>
+              </div>
+            </div>
+
+            <div id="boot-pump-group-1" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end;opacity:.4;pointer-events:none;transition:opacity .2s ease;">
+              <div class="field field--config field--compact">
+                <div class="field__label">Pump Time</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-pump-time">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0 min</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Delay Time</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-delay-time">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0 s</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label" style="font-size:23px;">Unstable Pressure Switch Time</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-unstable-pressure-switch-time">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0 min</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="boot-pump-group-2" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end;opacity:.4;pointer-events:none;transition:opacity .2s ease;">
+              <div class="field field--config field--compact">
+                <div class="field__label" style="font-size:25px;">Sensor Minimum Value</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-sensor-min-value">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0.0 bar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label" style="font-size:25px;">Sensor Maximum Value</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-sensor-max-value">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0.0 bar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field field--config field--compact">
+                <div class="field__label">Sensor Scale</div>
+                <div class="dual-toggle" style="--btn-h:72px;">
+                  <div class="dual-toggle__housing btn-touch" data-action="open-pumping-sensor-scale">
+                    <div class="dual-toggle__face is-off">
+                      <span class="dual-toggle__value">0.0 bar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connectivity panel -->
+        <div class="setup-tab-panel" data-tab-panel="connectivity" style="display:none;flex:1;flex-direction:column;">
+          <div style="flex:1;display:flex;gap:30px;min-height:0;position:relative;padding:12px 28px 100px;">
+            <div class="v-tabs" style="margin-top:12px;">
+              <div class="v-tab btn-touch is-active" data-action="boot-connectivity-view" data-value="radios" title="Radios">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.305 19.53.923-.382"/><path d="m15.228 16.852-.923-.383"/><path d="m16.852 15.228-.383-.923"/><path d="m16.852 20.772-.383.924"/><path d="m19.148 15.228.383-.923"/><path d="m19.53 21.696-.382-.924"/><path d="M2 7.82a15 15 0 0 1 20 0"/><path d="m20.772 16.852.924-.383"/><path d="m20.772 19.148.924.383"/><path d="M5 11.858a10 10 0 0 1 11.5-1.785"/><path d="M8.5 15.429a5 5 0 0 1 2.413-1.31"/><circle cx="18" cy="18" r="3"/></svg>
+              </div>
+              <div class="v-tab btn-touch" data-action="boot-connectivity-view" data-value="locations" title="Locations" id="boot-conn-locations-tab">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h1"></path><path d="M3 12h1"></path><path d="M3 19h1"></path><path d="M8 5h1"></path><path d="M8 12h1"></path><path d="M8 19h1"></path><path d="M13 5h8"></path><path d="M13 12h8"></path><path d="M13 19h8"></path></svg>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;overflow-y:auto;">
+              <!-- Radios view -->
+              <div id="boot-conn-radios-view" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start;max-width:1100px;padding-bottom:80px;">
+                <div class="field field--config field--compact">
+                  <div class="field__label">Communication Type</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="boot-cycle-comm">
+                      <div class="dual-toggle__face is-off">
+                        <span class="dual-toggle__value" id="boot-comm-type">Radio</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact" id="boot-conn-central-field">
+                  <div class="field__label">Central Radio</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="boot-open-central">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value">—</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="field field--config field--compact" id="boot-conn-equip-field" style="display:none;">
+                  <div class="field__label">Equipment ID</div>
+                  <div class="dual-toggle" style="--btn-h:72px;">
+                    <div class="dual-toggle__housing btn-touch" data-action="boot-open-equipment-id">
+                      <div class="dual-toggle__face is-off" style="justify-content:center;">
+                        <span class="dual-toggle__value">—</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="boot-conn-central-loc" style="grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;margin-top:8px;">
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Central Radio Location</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="boot-open-radio-central-lat">
+                        <div class="dual-toggle__face is-off" style="font-size:17px;">
+                          <span class="dual-toggle__value">Lat: </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact">
+                    <div class="dual-toggle" style="--btn-h:72px;margin-top:auto;">
+                      <div class="dual-toggle__housing btn-touch" data-action="boot-open-radio-central-lng">
+                        <div class="dual-toggle__face is-off" style="font-size:17px;">
+                          <span class="dual-toggle__value">Lng: </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="boot-conn-radio-fields" style="grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;">
+                   <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div class="field field--config field--compact">
+                      <div class="field__label">Pivot Center Radio (Irrimesh)</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                         <div class="dual-toggle__housing btn-touch" data-action="boot-open-pivot-center-radio">
+                          <div class="dual-toggle__face is-off" style="justify-content:center;">
+                            <span class="dual-toggle__value">—</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field field--config field--compact">
+                      <div class="field__label">Pump Radio (Spoti)</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                        <div class="dual-toggle__housing btn-touch" data-action="boot-open-pump">
+                          <div class="dual-toggle__face is-off" style="justify-content:center;">
+                            <span class="dual-toggle__value">—</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div class="field field--config field--compact">
+                      <div class="field__label">Last Tower Radio (GPS)</div>
+                      <div class="dual-toggle" style="--btn-h:72px;">
+                        <div class="dual-toggle__housing btn-touch" data-action="boot-open-last-tower-radio-gps">
+                          <div class="dual-toggle__face is-off" style="justify-content:center;">
+                            <span class="dual-toggle__value">—</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="boot-conn-spoti-location" style="grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+                  <div class="field field--config field--compact">
+                    <div class="field__label">Spoti Location</div>
+                    <div class="dual-toggle" style="--btn-h:72px;">
+                      <div class="dual-toggle__housing btn-touch" data-action="boot-open-spoti-lat">
+                        <div class="dual-toggle__face is-off" style="font-size:17px;">
+                          <span class="dual-toggle__value">Lat: </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field field--config field--compact">
+                    <div class="dual-toggle" style="--btn-h:72px;margin-top:auto;">
+                      <div class="dual-toggle__housing btn-touch" data-action="boot-open-spoti-lng">
+                        <div class="dual-toggle__face is-off" style="font-size:17px;">
+                          <span class="dual-toggle__value">Lng: </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="boot-conn-common-fields" style="grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:1100px;">
+                <div class="field field--config field--compact">
+                  <div class="field__label">Method</div>
+                  <div class="flat-readout" style="height:66px;padding:0 20px 0 8px;border-radius:10px;display:flex;align-items:center;justify-content:flex-start;font-size:30px;font-weight:700;">RSSNR</div>
+                </div>
+                <div class="field field--config field--compact">
+                  <div class="field__label">Connection</div>
+                  <div class="flat-readout" style="height:66px;padding:0 20px 0 8px;border-radius:10px;display:flex;align-items:center;justify-content:flex-start;font-size:30px;font-weight:700;">11 dB</div>
+                </div>
+              </div>
+              <!-- Locations view -->
+              <div id="boot-conn-locations-view" style="display:none;max-width:1100px;">
+                <div class="diag-table" style="font-size:20px;">
+                  <div class="diag-table__row diag-table__row--header" style="grid-template-columns:1fr;font-size:22px;">
+                    <div class="diag-table__cell">Radio Locations</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;">
+                    <div class="diag-table__row" style="grid-template-columns:1fr;">
+                      <div class="diag-table__cell" style="color:var(--text-secondary);">
+                        Central Radio Location: <span style="color:var(--text-primary);font-weight:800;">Lat , Lng </span>
+                      </div>
+                    </div>
+                    <div class="diag-table__row" style="grid-template-columns:1fr;">
+                      <div class="diag-table__cell" style="color:var(--text-secondary);">
+                        Pivot Center Radio (Irrimesh): <span style="color:var(--text-primary);font-weight:800;">Lat , Lng </span>
+                      </div>
+                    </div>
+                    <div class="diag-table__row" style="grid-template-columns:1fr;">
+                      <div class="diag-table__cell" style="color:var(--text-secondary);">
+                        Last Tower Radio (GPS): <span style="color:var(--text-primary);font-weight:800;">Lat , Lng </span>
+                      </div>
+                    </div>
+                    <div class="diag-table__row" style="grid-template-columns:1fr;">
+                      <div class="diag-table__cell" style="color:var(--text-secondary);">
+                        Spoti Location: <span style="color:var(--text-primary);font-weight:800;">Lat , Lng </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- 5. STANDBY -->
+      <div class="standby-screen" id="standby-screen">
+        <img class="standby-screen__logo" src="assets/icons/Logo-Bauer-Group-60.svg" alt="Bauer">
+        <div class="standby-screen__hint">Touch to wake</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/boot.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,3828 @@
+/**
+ * Reusable touch components. Anything used on more than one page lives
+ * here as a class, not as a one-off inline style — that's what keeps this
+ * scalable across future panel screens.
+ */
+
+/* ---- Generic touch feedback ---- */
+.btn-touch {
+  cursor: pointer;
+  transition: filter .12s ease, transform .06s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-touch:hover { filter: brightness(1.05); }
+/* Temp test — pin the hover brightness permanently on every touchable
+   Config control (field-btn, pill buttons, tabs, segment pickers,
+   checkboxes, toggles, hub arrows) instead of one at a time, so the
+   whole page can be eyeballed at once without a mouse sitting on each
+   button. Same shared classes also show up on Home/Alarms, so this
+   lights those up too. */
+.field-btn.btn-touch,
+.field-btn--pill.btn-touch,
+.field-btn--pill-auto.btn-touch,
+.section-tab.btn-touch,
+.v-tab.btn-touch,
+.segment-btn--pill.btn-touch,
+.segment-btn--sm.btn-touch,
+.segment-btn.btn-touch,
+.checkbox-row.btn-touch,
+.toggle-pill,
+.hub-nav-arrow.btn-touch,
+.op-summary__arrow.btn-touch,
+.alarm-pager-btn.btn-touch { filter: brightness(0.97); }
+.btn-touch:active { transform: scale(.98); }
+
+.nav-btn {
+  width: var(--nav-btn-size);
+  height: 92px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #82888f;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  color: #4e5c47;
+  overflow: hidden;
+}
+.nav-btn:last-of-type { margin-bottom: 0; }
+
+/* Nav buttons — match .v-tab file-item glass recipe: outer wrapper + inner face */
+.nav-btn::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  z-index: 0;
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.nav-btn svg,
+.nav-btn img {
+  position: relative;
+  z-index: 1;
+}
+.nav-btn:not(.is-active) img {
+  filter: invert(1) brightness(0.4);
+}
+.nav-btn.is-active img {
+  filter: invert(1) brightness(0.88);
+}
+.nav-btn img.no-invert {
+  filter: none;
+}
+.nav-btn.is-active img.no-invert {
+  filter: brightness(0) invert(1);
+}
+.nav-btn:not(.is-active):hover::after {
+  background: linear-gradient(165deg, #dfe1e3 0%, #f5f7f8 45%, #d8dce0 100%);
+}
+.nav-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+
+.nav-btn.is-active {
+  color: #e5e7eb;
+}
+.nav-btn.is-active::after {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .35),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+
+/* Remove old glossy overlay — dual-toggle__face doesn't use it */
+.nav-btn::before { display: none; }
+.nav-btn__label { font-size: 12.5px; font-weight: 700; letter-spacing: .03em; }
+.nav-btn__badge {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: var(--accent-red-dark);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glass button base — consolidated from scattered data-action selectors below.
+   Any field-btn that needs the frosted-glass + green-text look should add
+   this class instead of relying on hyper-specific attribute selectors. */
+.btn-glass {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+}
+.btn-glass::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.btn-glass span:not(.field-btn__chevron):not(.field-btn__icon) {
+  color: var(--accent-green-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+.btn-glass .field-btn__chevron svg,
+.btn-glass .field-btn__icon svg {
+  stroke: var(--accent-green-dark);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.btn-glass:active:not(.is-disabled) {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+
+/* ---- Field: label + green touch button (select / value / date) ---- */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field__label { font-size: 25px; font-weight: 700; color: var(--text-secondary); }
+.field--config .field__label { font-size: 36px; }
+.field--config.field--compact .field__label { font-size: var(--field-label-size, 26px); white-space: nowrap; }
+
+.field-btn {
+  position: relative;
+  width: 100%;
+  /* --btn-h lets one field override just its own button's height (set
+     inline via c.field({ style: '--btn-h:...' }) on the outer .field —
+     custom props inherit down to the button) without a class/selector
+     hack, and without touching every other plain .field-btn. */
+  height: var(--btn-h, var(--field-height));
+  background-color: var(--accent-green);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .12) 100%);
+  border-radius: var(--radius-md);
+  padding: 0 18px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, .4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -2px 5px rgba(0, 0, 0, .2),
+    0 5px 0 var(--accent-green-dark),
+    0 8px 12px rgba(0, 0, 0, .25);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+.field--config .field-btn { height: 66px; font-size: 30px; }
+
+/* Lat/long pair (Center Position, Zero Angle Position): same height as
+   every other config-page field-btn (Total Irrigated Radius, etc). */
+.field--config .field-btn--coord { height: 66px; }
+/* Metallic shell — System's Time/Date/Unit/Pressure/… grid only, same
+   frosted-glass recipe as Start Mode/Speed/Irrigation Rate (gray glass +
+   diagonal streaks + green bottom edge + green text), scoped to
+   .field--config so every other plain .field-btn stays untouched. */
+.field--config .field-btn:not(.is-disabled) {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+}
+.field--config .field-btn:not(.is-disabled)::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.field--config .field-btn:not(.is-disabled) span:not(.field-btn__chevron):not(.field-btn__icon) {
+  color: var(--accent-green-dark);
+}
+.field--config .field-btn:not(.is-disabled) .field-btn__chevron svg,
+.field--config .field-btn:not(.is-disabled) .field-btn__icon svg {
+  stroke: var(--accent-green-dark);
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, .5))
+    drop-shadow(0 -1px 1px rgba(0, 0, 0, .25));
+}
+/* Time/Date — read-only, so the same metallic language but flat/inert
+   (neutral gray glass), matching op-summary__arrow.is-disabled. */
+.field--config .field-btn.is-disabled {
+  background-color: rgba(150, 190, 165, .35);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  color: var(--text-disabled);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), inset 0 -2px 4px rgba(90, 140, 110, .2);
+  position: relative;
+}
+.field--config .field-btn.is-disabled::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  pointer-events: none;
+  z-index: 2;
+}
+/* Start Date's own hatch — same recipe as Remove Operation/Add Segment,
+   muted green text/icon/degrau instead of the flat gray readout the
+   rest of .field--config's disabled fields use. Also available as the
+   plain .field-btn--hatch class for fields that don't go through the
+   c.field() helper (so there's no data-action left to hang a
+   field-btn--for-* hook off of once disabled — Pause Hours' Start/End
+   Time, say) but still want this same sealed-shut look. */
+.field-btn.field-btn--for-open-start-date.is-disabled,
+.field-btn.field-btn--for-open-irrigation-rate.is-disabled,
+.field-btn.field-btn--hatch.is-disabled {
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 2px 0 #4f9c6b;
+  color: #4f9c6b;
+}
+.field-btn.field-btn--for-open-start-date.is-disabled .field-btn__icon svg,
+.field-btn.field-btn--for-open-irrigation-rate.is-disabled .field-btn__icon svg,
+.field-btn.field-btn--hatch.is-disabled .field-btn__icon svg {
+  stroke: #4f9c6b;
+}
+.field-btn.field-btn--for-open-start-date.is-disabled::before,
+.field-btn.field-btn--for-open-irrigation-rate.is-disabled::before,
+.field-btn.field-btn--hatch.is-disabled::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e8ecef, #9aa3ab);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  z-index: 3;
+  pointer-events: none;
+}
+.field-btn.field-btn--for-open-start-date.is-disabled::after,
+.field-btn.field-btn--for-open-irrigation-rate.is-disabled::after,
+.field-btn.field-btn--hatch.is-disabled::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -6px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  transform-origin: top center;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Flat metallic readout (Method/Connection/Quality on Connection Status)
+   — same green glass tint as the interactive metallic buttons, but flat:
+   no 3D bezel, no gloss, no :active dip, since there's nothing to tap
+   here. */
+.flat-readout {
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0,0,0,.35);
+  border-top-color: rgba(0,0,0,.25);
+  color: #4b5563;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(0,0,0,.1),
+    0 3px 6px rgba(0,0,0,.28);
+  min-width: 120px;
+  justify-content: center;
+  white-space: nowrap;
+}
+.field-btn-value {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  color: var(--accent-green-dark);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 0 -2px 4px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(23, 122, 58, .85);
+}
+/* Consolidated glass styling for key action buttons — kept scoped by
+   data-action so existing markup needs no changes. Future buttons should
+   prefer the reusable .btn-glass class above. */
+.field-btn[data-action="cycle-start-mode"] { height: 57px; }
+.field-btn[data-action="cycle-start-mode"],
+.field-btn[data-action="open-percentimeter"],
+.field-btn[data-action="open-irrigation-rate"],
+.field-btn[data-action="cycle-stop-mode"],
+.field-btn[data-action="open-stop-angle"],
+.field-btn[data-action="open-start-date"],
+.field-btn[data-action="open-center-lat"],
+.field-btn[data-action="open-center-lng"],
+.field-btn[data-action="start-clear-screen"],
+.field-btn[data-action="clear-screen-return"],
+.field-btn[data-action="go-page"][data-value="endGunSegments"],
+.field-btn[data-action="go-page"][data-value="endGun"],
+.field-btn[data-action="open-pause-hours-1-start"],
+.field-btn[data-action="open-pause-hours-1-end"],
+.field-btn[data-action="open-pause-hours-2-start"],
+.field-btn[data-action="open-pause-hours-2-end"],
+.field-btn[data-action="open-vri-test-module"],
+.field-btn[data-action="select-vri-test-module"],
+.field-btn[data-action="open-zero-angle-lat"],
+.field-btn[data-action="open-zero-angle-lng"] { filter: brightness(0.97); }
+.field-btn[data-action="cycle-start-mode"],
+.field-btn[data-action="open-percentimeter"],
+.field-btn[data-action="open-irrigation-rate"],
+.field-btn[data-action="cycle-stop-mode"],
+.field-btn[data-action="open-stop-angle"],
+.field-btn[data-action="open-start-date"],
+.field-btn[data-action="open-center-lat"],
+.field-btn[data-action="open-center-lng"],
+.field-btn[data-action="start-clear-screen"],
+.field-btn[data-action="clear-screen-return"],
+.field-btn[data-action="go-page"][data-value="endGunSegments"],
+.field-btn[data-action="go-page"][data-value="endGun"],
+.field-btn[data-action="open-pause-hours-1-start"],
+.field-btn[data-action="open-pause-hours-1-end"],
+.field-btn[data-action="open-pause-hours-2-start"],
+.field-btn[data-action="open-pause-hours-2-end"],
+.field-btn[data-action="open-vri-test-module"],
+.field-btn[data-action="select-vri-test-module"],
+.field-btn[data-action="open-zero-angle-lat"],
+.field-btn[data-action="open-zero-angle-lng"] {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+}
+.field-btn[data-action="cycle-start-mode"]::before,
+.field-btn[data-action="open-percentimeter"]::before,
+.field-btn[data-action="open-irrigation-rate"]::before,
+.field-btn[data-action="cycle-stop-mode"]::before,
+.field-btn[data-action="open-stop-angle"]::before,
+.field-btn[data-action="open-start-date"]::before,
+.field-btn[data-action="open-center-lat"]::before,
+.field-btn[data-action="open-center-lng"]::before,
+.field-btn[data-action="start-clear-screen"]::before,
+.field-btn[data-action="clear-screen-return"]::before,
+.field-btn[data-action="go-page"][data-value="endGunSegments"]::before,
+.field-btn[data-action="go-page"][data-value="endGun"]::before,
+.field-btn[data-action="open-pause-hours-1-start"]::before,
+.field-btn[data-action="open-pause-hours-1-end"]::before,
+.field-btn[data-action="open-pause-hours-2-start"]::before,
+.field-btn[data-action="open-pause-hours-2-end"]::before,
+.field-btn[data-action="open-vri-test-module"]::before,
+.field-btn[data-action="select-vri-test-module"]::before,
+.field-btn[data-action="open-zero-angle-lat"]::before,
+.field-btn[data-action="open-zero-angle-lng"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+/* Plain green text, to stand out against the glass surface instead of the
+   plain white label every other .field-btn uses. */
+.field-btn[data-action="cycle-start-mode"] span:not(.field-btn__chevron),
+.field-btn[data-action="open-percentimeter"] span:not(.field-btn__icon),
+.field-btn[data-action="open-irrigation-rate"] span:not(.field-btn__icon),
+.field-btn[data-action="cycle-stop-mode"] span:not(.field-btn__chevron),
+.field-btn[data-action="open-stop-angle"] span:not(.field-btn__icon),
+.field-btn[data-action="open-start-date"] span:not(.field-btn__icon) {
+  color: var(--accent-green-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+/* Chevron/edit-icon to match the green text (overrides the inline stroke
+   attribute on the svg, whether a fixed color or currentColor — CSS wins
+   over the presentation attribute either way). */
+.field-btn[data-action="cycle-start-mode"] .field-btn__chevron svg,
+.field-btn[data-action="open-percentimeter"] .field-btn__icon svg,
+.field-btn[data-action="open-irrigation-rate"] .field-btn__icon svg,
+.field-btn[data-action="cycle-stop-mode"] .field-btn__chevron svg,
+.field-btn[data-action="open-stop-angle"] .field-btn__icon svg,
+.field-btn[data-action="open-start-date"] .field-btn__icon svg,
+.field-btn[data-action="open-center-lat"] .field-btn__icon svg,
+.field-btn[data-action="open-center-lng"] .field-btn__icon svg,
+.field-btn[data-action="open-zero-angle-lat"] .field-btn__icon svg,
+.field-btn[data-action="open-zero-angle-lng"] .field-btn__icon svg,
+.field-btn[data-action="go-page"][data-value="endGunSegments"] svg {
+  stroke: var(--accent-green-dark);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+/* open-center-lat/lng, start-clear-screen, clear-screen-return and these
+   two go-page buttons hold their value as a bare text node (no wrapping
+   span like the others above), so the green has to go on the button
+   itself for the text to inherit it. */
+.field-btn[data-action="open-center-lat"],
+.field-btn[data-action="open-center-lng"],
+.field-btn[data-action="start-clear-screen"],
+.field-btn[data-action="clear-screen-return"],
+.field-btn[data-action="go-page"][data-value="endGunSegments"],
+.field-btn[data-action="go-page"][data-value="endGun"],
+.field-btn[data-action="open-pause-hours-1-start"],
+.field-btn[data-action="open-pause-hours-1-end"],
+.field-btn[data-action="open-pause-hours-2-start"],
+.field-btn[data-action="open-pause-hours-2-end"],
+.field-btn[data-action="open-vri-test-module"],
+.field-btn[data-action="select-vri-test-module"],
+.field-btn[data-action="open-zero-angle-lat"],
+.field-btn[data-action="open-zero-angle-lng"] {
+  color: var(--accent-green-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+.field-btn[data-action="cycle-start-mode"]:active:not(.is-disabled),
+.field-btn[data-action="open-percentimeter"]:active:not(.is-disabled),
+.field-btn[data-action="open-irrigation-rate"]:active:not(.is-disabled),
+.field-btn[data-action="cycle-stop-mode"]:active:not(.is-disabled),
+.field-btn[data-action="open-stop-angle"]:active:not(.is-disabled),
+.field-btn[data-action="open-start-date"]:active:not(.is-disabled),
+.field-btn[data-action="open-center-lat"]:active:not(.is-disabled),
+.field-btn[data-action="open-center-lng"]:active:not(.is-disabled),
+.field-btn[data-action="start-clear-screen"]:active:not(.is-disabled),
+.field-btn[data-action="clear-screen-return"]:active:not(.is-disabled),
+.field-btn[data-action="go-page"][data-value="endGunSegments"]:active:not(.is-disabled),
+.field-btn[data-action="go-page"][data-value="endGun"]:active:not(.is-disabled),
+.field-btn[data-action="open-pause-hours-1-start"]:active:not(.is-disabled),
+.field-btn[data-action="open-pause-hours-1-end"]:active:not(.is-disabled),
+.field-btn[data-action="open-pause-hours-2-start"]:active:not(.is-disabled),
+.field-btn[data-action="open-pause-hours-2-end"]:active:not(.is-disabled),
+.field-btn[data-action="open-vri-test-module"]:active:not(.is-disabled),
+.field-btn[data-action="select-vri-test-module"]:active:not(.is-disabled),
+.field-btn[data-action="open-zero-angle-lat"]:active:not(.is-disabled),
+.field-btn[data-action="open-zero-angle-lng"]:active:not(.is-disabled) {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Same glass test as Start Mode, on End Gun and Fertigation's
+   Enable/Disable toggles: Disable (.field-btn--muted) keeps the olive
+   #6f8067 tone below, Enable (further down) gets the green from Start
+   Mode. Scoped to only these two buttons either way. */
+.field-btn[data-action="toggle-end-gun"].field-btn--muted,
+.field-btn[data-action="toggle-fertigation"].field-btn--muted {
+  background-color: rgba(100, 105, 108, .3);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .16) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .08) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(120, 125, 128, .5) 0%, rgba(120, 125, 128, .2) 45%, rgba(90, 94, 97, .28) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(160, 180, 150, .4),
+    0 5px 0 rgba(70, 84, 62, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+}
+.field-btn[data-action="toggle-end-gun"].field-btn--muted::before,
+.field-btn[data-action="toggle-fertigation"].field-btn--muted::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.field-btn[data-action="toggle-end-gun"].field-btn--muted span:not(.field-btn__chevron),
+.field-btn[data-action="toggle-fertigation"].field-btn--muted span:not(.field-btn__chevron) {
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  margin-left: 14px;
+}
+.field-btn[data-action="toggle-end-gun"].field-btn--muted .field-btn__chevron svg,
+.field-btn[data-action="toggle-fertigation"].field-btn--muted .field-btn__chevron svg {
+  stroke: #4e5c47;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.field-btn[data-action="toggle-end-gun"].field-btn--muted::after,
+.field-btn[data-action="toggle-fertigation"].field-btn--muted::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  margin-top: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #eef2e9 0%, #9bab8f 30%, #6f8067 60%, #4e5c47 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .45),
+    0 1px 2px rgba(0, 0, 0, .5),
+    0 0 4px rgba(111, 128, 103, .6);
+  pointer-events: none;
+}
+.field-btn[data-action="toggle-end-gun"].field-btn--muted:active:not(.is-disabled),
+.field-btn[data-action="toggle-fertigation"].field-btn--muted:active:not(.is-disabled) {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Enable state (no --muted class) — same glass shell, green like Start
+   Mode, so the toggle reads green=on / olive=off. */
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted),
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted) {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+}
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted)::before,
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted)::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted) span:not(.field-btn__chevron),
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted) span:not(.field-btn__chevron) {
+  color: var(--accent-green-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  margin-left: 14px;
+}
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted) .field-btn__chevron svg,
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted) .field-btn__chevron svg {
+  stroke: var(--accent-green-dark);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted)::after,
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted)::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  margin-top: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #00ff62 0%, #00ff5d 30%, #3bad63 60%, var(--accent-green-dark) 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .45),
+    0 1px 2px rgba(0, 0, 0, .5),
+    0 0 6px rgba(74, 222, 128, .9),
+    0 0 2px rgba(74, 222, 128, .8);
+  pointer-events: none;
+}
+.field-btn[data-action="toggle-end-gun"]:not(.field-btn--muted):active:not(.is-disabled),
+.field-btn[data-action="toggle-fertigation"]:not(.field-btn--muted):active:not(.is-disabled) {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+.field-btn:active:not(.is-disabled) {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--accent-green-dark),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+
+/* Return button: pinned to the same spot on every page (Config, GPS, …),
+   regardless of how much content sits above it — position, not flex order. */
+.page-footer-return {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+.page-footer-return .field-btn {
+  width: auto;
+  height: 59px;
+  padding: 0 34px;
+  font-size: 22px;
+  justify-content: center;
+}
+/* Fixed-height pill button — the "All on / Ramp / Alternate", "Import /
+   Export", "Select / Rename / Reset" style row buttons scattered across
+   Maintenance and VRI. Every other visual (background, border, color)
+   stays wherever it already was, inline or via another class. */
+/* Metallic shell — same frosted-glass recipe as Start Mode/Speed/etc.:
+   gray glass + green text/icon + green bottom edge, instead of the flat
+   green fill every other plain .field-btn still uses. Excludes
+   .field-btn--danger (Delete keeps its own red glass, below). */
+.field-btn--pill:not(.field-btn--danger),
+.field-btn--pill-auto:not(.field-btn--danger) {
+  background-color: rgba(140, 150, 160, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  color: var(--accent-green-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+}
+.field-btn--pill:not(.field-btn--danger) svg,
+.field-btn--pill-auto:not(.field-btn--danger) svg {
+  stroke: var(--accent-green-dark);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.field-btn--pill:not(.field-btn--danger):active:not(.is-disabled),
+.field-btn--pill-auto:not(.field-btn--danger):active:not(.is-disabled) {
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+.field-btn--pill {
+  height: 65px;
+  font-size: 22px;
+  justify-content: center;
+}
+/* Same idea, auto width — a hub-bar row's "Export"/"Import"/"Check Data"
+   action sitting next to the tabs (Maintenance's Logs/Errors/Programs,
+   VRI's Diagnosis). */
+.field-btn--pill-auto {
+  width: auto;
+  height: 59px;
+  padding: 0 30px;
+  font-size: 22px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  justify-content: center;
+}
+.field-btn.is-disabled {
+  background: var(--border);
+  background-image: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+/* Same hinged glass hatch as the operation carousel arrow, adapted to
+   this pill's wide rectangular shape — Add Segment, once the segment
+   cap (12) is hit and there's genuinely nothing left to add. Remove
+   Operation's own disabled look is simpler (see below) — the full glass
+   hatch on it is an Original-theme-only thing, in original-theme.css. */
+.field-btn--for-add-segment.is-disabled {
+  position: relative;
+  overflow: visible;
+  /* The pill's own 3D degrau (0 5px 0 ... in the enabled-state rule)
+     still wins ties against .field-btn.is-disabled's box-shadow:none in
+     some cases — kill it explicitly so nothing pokes out below the
+     glass cover. */
+  box-shadow: none;
+}
+.field-btn--for-add-segment.is-disabled::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e8ecef, #9aa3ab);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  z-index: 3;
+  pointer-events: none;
+}
+.field-btn--for-add-segment.is-disabled::after {
+  content: "";
+  position: absolute;
+  /* Extends well past the button's own footprint (not just a couple px
+     like the arrow hatch) so it also covers the raised 3D edge/degrau
+     underneath, instead of leaving a sliver of it peeking out below the
+     glass. */
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -6px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  transform-origin: top center;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Remove Operation's own hatch — same recipe as Add Segment, red-tinted
+   glass instead of the neutral blue-white one, matching the danger
+   color underneath. */
+.field-btn--for-remove-operation.is-disabled {
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 2px 0 #9c6b6b;
+  color: #9c6b6b;
+}
+.field-btn--for-remove-operation.is-disabled svg {
+  stroke: #9c6b6b;
+}
+.field-btn--for-remove-operation.is-disabled::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e8ecef, #9aa3ab);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  z-index: 3;
+  pointer-events: none;
+}
+.field-btn--for-remove-operation.is-disabled::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -6px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15),
+    inset 0 1px 1px rgba(255, 255, 255, .6);
+  transform-origin: top center;
+  pointer-events: none;
+  z-index: 2;
+}
+.field-btn__chevron { position: absolute; right: 15px; top: 50%; margin-top: -9px; }
+.field-btn__icon { position: absolute; right: 15px; top: 50%; margin-top: -9px; }
+/* Muted read-only address (Information → Addresses' Controller/Radio —
+   sourced from the panel itself, not the network like the others below)
+   — same 3D shell, just an olive, washed-out tone instead of bright green.
+   Not interactive (no btn-touch), so no :active dip either. */
+.field-btn--muted {
+  background-color: #6f8067;
+  color: rgba(255, 255, 255, .75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .35),
+    inset 0 -2px 5px rgba(0, 0, 0, .2),
+    0 5px 0 #56634f,
+    0 8px 12px rgba(0, 0, 0, .25);
+}
+
+/* ---- Checkbox (Pause Time: Days of the week) ---- */
+.checkbox-row { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+/* Metallic shell — same recipe as the toggle switch/nav-btn: unchecked =
+   gray glass box with a green outline, checked = green glass fill. */
+.checkbox {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: rgba(31, 157, 76, .75);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .5),
+    inset 0 -2px 4px rgba(23, 122, 58, .3),
+    0 2px 5px rgba(0, 0, 0, .15);
+}
+.checkbox:not(.is-checked) {
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
+  border: 2px solid var(--accent-green);
+  box-shadow: inset 0 2px 4px rgba(30, 40, 50, .15);
+}
+.checkbox-row__label {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Days-of-the-week row: 7 equal columns so every day fits on one line
+   regardless of screen width, instead of wrapping the last one alone. */
+.days-of-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+
+/* ---- Toggle pill (small on/off switch: Fertigation, etc.) ---- */
+.toggle-pill {
+  position: relative;
+  display: inline-block;
+  width: 65px;
+  height: 36px;
+  cursor: pointer;
+}
+/* Metallic shell — same neutral-gray/green glass recipe as the rest of
+   the metallic set: off = gray glass track, on = green glass track, knob
+   a small brushed-metal bezel that slides between them. */
+.toggle-pill__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background-color: rgba(140, 150, 160, .15);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  box-shadow: inset 0 2px 4px rgba(30, 40, 50, .15);
+  transition: background-color .15s ease;
+}
+.toggle-pill.is-on .toggle-pill__track {
+  background-color: rgba(31, 157, 76, .75);
+  border-color: rgba(160, 168, 176, .55);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), inset 0 -2px 4px rgba(23, 122, 58, .3);
+}
+/* Chrome knob — same polished-metal recipe as the slider thumb (radial
+   highlight sliding to a dark rim) instead of flat gray glass. */
+.toggle-pill__knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #d8d8d8 40%, #7a7a7a 75%, #4a4a4a 100%);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .4),
+    0 0 0 2px rgba(255, 255, 255, .25),
+    0 1px 2px rgba(0, 0, 0, .25);
+  transition: left .15s ease, right .15s ease;
+}
+.toggle-pill.is-on .toggle-pill__knob { left: auto; right: 4px; }
+
+/* ---- Rocker switch (Direction, Irrigation Mode) ---- */
+/* A glossy plastic housing with real depth (perspective) around a single
+   rigid paddle. Both halves are welded together as `.two-state__paddle`
+   and rotate as ONE piece around their shared center hinge (rotateY) —
+   the active side dips back/away, the other rises toward the viewer.
+   That's the actual mechanic of a light-switch rocker: press one side,
+   the other physically comes up. Not two independently-shaded buttons. */
+.two-state {
+  position: relative;
+  width: 100%;
+  max-width: 310px;
+  /* Housing height = the buttons' own height (83px, same as before —
+     97px minus the old 6px padding on each side) plus just enough
+     padding to still show a thin frame around them (2px instead of 6px)
+     — shrinks the "back" margin without shrinking the buttons themselves,
+     which still fill 100% of this reduced content box. */
+  height: 103px;
+  padding: 5px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 18px rgba(15, 23, 42, .28),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  perspective: 600px;
+}
+.two-state__paddle {
+  display: flex;
+  /* No gap — the two halves sit flush, joined at a single center seam,
+     like one continuous rocker face instead of two separate buttons. */
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .22s ease;
+}
+/* The tilt itself: swap which side leans back vs. forward. If this ever
+   reads backwards on screen (active side looks raised, not sunk), flip
+   the two signs below. */
+.two-state--left-active .two-state__paddle { transform: rotateY(-4deg); }
+.two-state--right-active .two-state__paddle { transform: rotateY(4deg); }
+
+.two-state__half {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.two-state__circle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dark contour around each half's own face, top/bottom only here — the
+     left/right sides are added below, per half, on the OUTER edge only
+     (never the shared center seam), so the two halves still read as one
+     joined piece with no visible line down the middle. */
+  border-top: 1px solid rgba(0, 0, 0, .35);
+  border-bottom: 1px solid rgba(0, 0, 0, .35);
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  /* Off = raised paddle face: glossy highlight on top, shadow pooling
+     underneath — same idea as before, just heavier now so the free outer
+     tip (the edge furthest from the center hinge) visibly casts a shadow,
+     reading as "this corner is up in the air". --two-state-edge-shadow
+     (set per half below) adds the matching bright bevel, but only on
+     that half's own OUTER edge — the center seam stays plain so the two
+     halves read as one button, not two glued together. */
+  box-shadow:
+    0 5px 8px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 5px rgba(0, 0, 0, .1),
+    var(--two-state-edge-shadow, none);
+  transition: background .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+/* Only the outer corners of the whole paddle are rounded — the shared
+   center edge stays square so the two halves read as one joined piece.
+   Same reasoning for border-left/right and the edge-shadow variable:
+   only the outer tip gets them, the seam-facing side gets neither. */
+.two-state__half:first-child .two-state__circle {
+  border-radius: 12px 0 0 12px;
+  border-left: 1px solid rgba(0, 0, 0, .35);
+  --two-state-edge-shadow: inset 4px 0 0 -1px rgba(255, 255, 255, 1), inset 8px 0 9px -5px rgba(0, 0, 0, .38);
+}
+.two-state__half:last-child .two-state__circle {
+  border-radius: 0 12px 12px 0;
+  border-right: 1px solid rgba(0, 0, 0, .35);
+  --two-state-edge-shadow: inset -4px 0 0 -1px rgba(255, 255, 255, 1), inset -8px 0 9px -5px rgba(0, 0, 0, .38);
+}
+.two-state__icon { color: var(--switch-icon-inactive); transition: color .2s ease; }
+.two-state__circle.is-active .two-state__icon { color: #ffffff; }
+/* Default img icons — dark gray when inactive */
+.two-state__icon .asset-icon { filter: invert(35%) sepia(20%) saturate(10%) hue-rotate(80deg) brightness(60%); transition: filter .2s ease; }
+/* When the toggle is ON = green bg + #dedede icon */
+.two-state__circle.is-active .two-state__icon .asset-icon { filter: invert(92%) !important; }
+
+/* On = the sunken half: gloss gone, shadow only inward, and slightly
+   darker (the receding face catching less light) on top of the paddle tilt.
+   --two-state-edge-shadow-active (set per half below) adds a dark bevel
+   along the active side's own OUTER edge only — same "sunk into a
+   housing" read the inactive side already gets for free from the outer
+   .two-state border — never on the center seam, so the two halves still
+   read as one button, not two glued together. */
+.two-state__circle.is-active {
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    var(--two-state-edge-shadow-active, none);
+}
+.two-state__half:first-child .two-state__circle.is-active { --two-state-edge-shadow-active: inset 2px 0 6px -2px rgba(0, 0, 0, .5); }
+.two-state__half:last-child .two-state__circle.is-active { --two-state-edge-shadow-active: inset -2px 0 6px -2px rgba(0, 0, 0, .5); }
+/* Active-state color per switch semantics: Direction is always green when
+   selected; Irrigation Mode keeps its mode color (blue = wet, brown = dry),
+   matching the platform's irrigating/dry-moving palette. */
+.two-state__circle--green.is-active { background: linear-gradient(165deg, #22c55e 0%, #15803d 100%); }
+
+/* Direction toggle — green metallic active state */
+.two-state[data-action="cycle-direction"] .two-state__circle--green.is-active {
+  background-color: rgba(34, 197, 94, .7);
+  backdrop-filter: blur(6px) saturate(130%);
+  -webkit-backdrop-filter: blur(6px) saturate(130%);
+  position: relative;
+  overflow: hidden;
+}
+/* Glossy highlight */
+.two-state[data-action="cycle-direction"] .two-state__circle--green.is-active::before {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px; right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .45), transparent);
+  pointer-events: none;
+}
+/* Icon → #dedede when active */
+.two-state[data-action="cycle-direction"] .two-state__circle--green.is-active .two-state__icon {
+  color: #dedede !important;
+}
+.two-state[data-action="cycle-direction"] .two-state__circle--green.is-active .two-state__icon svg {
+  stroke: #dedede !important;
+}
+.two-state[data-action="cycle-direction"] .two-state__circle--green.is-active .two-state__icon img.asset-icon {
+  filter: invert(92%) !important;
+  -webkit-filter: invert(92%) !important;
+}
+
+/* Irrigation Mode — blue metallic active state */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--blue.is-active {
+  background-color: rgba(59, 130, 246, .7) !important;
+  backdrop-filter: blur(6px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(6px) saturate(130%) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Glossy highlight */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--blue.is-active::before {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px; right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .45), transparent);
+  pointer-events: none;
+}
+/* Icon → white (SVG fill/stroke via currentColor) */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--blue.is-active .two-state__icon {
+  color: #ffffff !important;
+}
+.two-state[data-action="cycle-irrigation"] .two-state__circle--blue.is-active .two-state__icon svg {
+  fill: #dedede !important;
+  stroke: none !important;
+}
+
+/* Irrigation Mode — brown metallic active state */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--brown.is-active {
+  background-color: rgba(146, 96, 58, .7) !important;
+  backdrop-filter: blur(6px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(6px) saturate(130%) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Glossy highlight */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--brown.is-active::before {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px; right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .45), transparent);
+  pointer-events: none;
+}
+/* Icon → white (SVG stroke via currentColor) */
+.two-state[data-action="cycle-irrigation"] .two-state__circle--brown.is-active .two-state__icon {
+  color: #ffffff !important;
+}
+.two-state[data-action="cycle-irrigation"] .two-state__circle--brown.is-active .two-state__icon svg {
+  fill: none !important;
+  stroke: #dedede !important;
+  stroke-width: 2.5 !important;
+}
+
+/* ---- Dual toggle (End Gun + Fertigation) ---- */
+/* Two independently-tappable rocker switches side-by-side, same visual
+   language as .two-state (housing + raised/sunken face) but each is its
+   own standalone switch — both can be active/inactive independently. */
+.dual-toggle {
+  display: flex;
+  gap: 12px;
+  height: var(--btn-h, var(--field-height));
+}
+.dual-toggle__housing {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  height: 100%;
+  padding: 4px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 6px 14px rgba(15, 23, 42, .25),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  perspective: 600px;
+}
+.dual-toggle__housing.is-placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Face — one piece, centered icon, raised when off / sunken when on */
+.dual-toggle__face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  transition: background .2s ease, box-shadow .2s ease, filter .2s ease, transform .22s ease;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* Slight inward tilt when active — same "pressed rocker" read */
+.dual-toggle__housing.is-active .dual-toggle__face {
+  transform: rotateY(-2deg);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+  filter: none;
+}
+
+/* Off = raised, inactive gray — clean, no glossy overlay */
+.dual-toggle__face.is-off::before {
+  display: none;
+}
+
+/* On = green, same palette as .two-state__circle--green.is-active */
+.dual-toggle__face.is-on {
+  background: linear-gradient(165deg, #187339 0%, #15803d 100%);
+  border-color: rgba(0, 0, 0, .45);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+
+/* Icon */
+.dual-toggle__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--switch-icon-inactive);
+  transition: color .2s ease, filter .2s ease;
+  z-index: 1;
+}
+/* SVG icons — neutral gray when off */
+.dual-toggle__icon svg text { stroke: none; }
+.dual-toggle__face.is-off .dual-toggle__icon svg { stroke: rgb(198 198 198); filter: none; }
+
+/* img/asset-icon — inverted when off → appears gray */
+.dual-toggle__face.is-off .dual-toggle__icon img { filter: invert(60%); }
+
+/* On state — light gray text/icon when background turns green */
+.dual-toggle__face.is-on .dual-toggle__icon svg { stroke: #dedede !important; filter: none !important; }
+.dual-toggle__face.is-on .dual-toggle__icon img.asset-icon { filter: invert(92%) !important; -webkit-filter: invert(92%) !important; }
+.dual-toggle__face.is-on .dual-toggle__icon { color: #dedede !important; }
+
+/* Off text content — keep original neutral tone */
+.dual-toggle__face.is-off .dual-toggle__icon:not(.dual-toggle__icon svg):not(.dual-toggle__icon img) { color: var(--switch-icon-inactive); }
+
+/* Optional label inside the face */
+.dual-toggle__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: currentColor;
+  margin-top: 4px;
+  z-index: 1;
+}
+.dual-toggle__face.is-on .dual-toggle__label { color: #ffffff; }
+.dual-toggle__face.is-off .dual-toggle__label { color: #4e5c47; }
+
+/* Right-side field inside the dual-toggle row */
+.dual-toggle__right {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+}
+.dual-toggle__right .field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dual-toggle__right .field__label { display: none; }
+.dual-toggle__right .field-btn {
+  height: 100%;
+  font-size: 24px;
+}
+
+/* Press feedback */
+.dual-toggle__housing:active:not(.is-disabled) .dual-toggle__face {
+  transform: translateY(2px);
+}
+.dual-toggle__housing.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* Pure readout value inside a glass-pair face */
+.dual-toggle__value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  z-index: 1;
+  white-space: nowrap;
+  padding-left: 8px;
+}
+/* When face is on (green bg), text must be light gray so it's readable */
+.dual-toggle__face.is-on .dual-toggle__value {
+  color: #d1d5db;
+  text-shadow: none;
+}
+
+/* ---- Backup action buttons (Maintenance → Backup: Import / Export) —
+    same dual-toggle housing+face look, sized for a vertical stack. ---- */
+.backup-action-btn {
+  padding: 4px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.backup-action-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.backup-action-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.backup-action-btn__face {
+  width: 100%;
+  padding: 18px 20px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+/* ---- Program action buttons (Maintenance → Programs: Select / Rename / Reset) —
+    same dual-toggle housing+face look. ---- */
+.program-action-btn {
+  padding: 4px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.program-action-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.program-action-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.program-action-btn__face {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+/* ---- System action buttons (Maintenance → System: Reset Parameters / Restart) —
+    same dual-toggle housing+face look. ---- */
+.system-action-btn {
+  padding: 4px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.system-action-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.system-action-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.system-action-btn__face {
+  width: 100%;
+  padding: 18px 22px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+/* ---- Footer action buttons (Maintenance → Export / Import) —
+    same dual-toggle housing+face look, compact for footer row. ---- */
+.footer-action-btn {
+  padding: 3px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.footer-action-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.footer-action-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.footer-action-btn__face {
+  width: 100%;
+  padding: 10px 22px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+/* ---- Clear screen buttons (Clear Screen page: Clean Screen / Return / Again) —
+    same dual-toggle housing+face look, centered. ---- */
+.clear-screen-btn {
+  padding: 3px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.clear-screen-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.clear-screen-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.clear-screen-btn__face {
+  width: 100%;
+  padding: 14px 28px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+/* ---- Section tabs (Irrigation sub-sections, reusable elsewhere) ---- */
+/* Flat industrial menu bar — hairline-divided cells, active cell filled
+   solid. Not a pill/segmented control; the classic HMI top-menu look
+   (MACHINE | MAIN SCREEN | CONSTANTS | ...). Cells are a fixed standard
+   size (not flex-shrunk to fit however many there are) so labels never
+   get squeezed — when there isn't room for all of them (e.g. the Config
+   hub's 11 items), the bar scrolls horizontally instead. */
+/* Metallic shell — same neutral-gray glass recipe as the rest of the
+   metallic set, layered on top of (not replacing) the joined-bar shape. */
+.section-tabs {
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+
+  /* Metallic chrome shell — same recipe as op-summary__pill/field-btn */
+  background: linear-gradient(165deg, #e8e8e8 0%, #f5f6f7 30%, #d8dade 60%, #c4c6ca 100%);
+  border: 1px solid rgba(0,0,0,.35);
+  border-top-color: rgba(0,0,0,.25);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(0,0,0,.1),
+    0 3px 6px rgba(0,0,0,.28);
+
+  scrollbar-width: none; /* Firefox */
+}
+.section-tabs::-webkit-scrollbar { display: none; } /* Chrome/Edge/Safari */
+.section-tab {
+  flex: 0 0 auto;
+  min-width: 130px;
+  text-align: center;
+  padding: 17px 15px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: #4e5c47;
+  border-right: 1px solid rgba(0,0,0,.18);
+}
+.section-tab:last-child { border-right: none; }
+/* Fill mode */
+.section-tabs--fill .section-tab { flex: 1 1 0; min-width: 0; }
+/* Active tab — green metallic tint */
+.section-tab.is-active {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.4),
+    inset 0 -2px 5px rgba(0,0,0,.25);
+}
+
+/* ---- Vertical section list (Irrigation's side menu) ---- */
+/* Same idea as .section-tab/.section-tabs but stacked top-to-bottom as
+   separate rounded buttons (not a joined bar) — up/down arrows flank it,
+   same style as .hub-nav-arrow. */
+.v-tabs {
+  flex-shrink: 0;
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+/* Same 3D-button treatment as .field-btn — gradient face, raised edge,
+   drop shadow, presses flat on tap — just resized/recolored for the
+   sidebar's tall, narrow tab shape. */
+/* Metallic shell — same file-item glass recipe: outer wrapper + inner face. */
+.v-tab {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+  color: #4e5c47;
+  overflow: hidden;
+}
+.v-tab::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  z-index: 0;
+  transition: background .2s ease, box-shadow .2s ease;
+}
+.v-tab svg {
+  position: relative;
+  z-index: 1;
+}
+.v-tab:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.v-tab__icon {
+  position: relative;
+  z-index: 1;
+  filter: grayscale(1) brightness(.85);
+  transition: filter .12s ease;
+}
+/* End Gun icons — light gray when not active, white when active */
+.v-tab:not(.is-active) .v-tab__icon[src*="endgun"] {
+  opacity: .35;
+}
+.v-tab__label {
+  position: relative;
+  z-index: 1;
+  font-size: 17px;
+  font-weight: 700;
+  color: #4e5c47;
+  transition: color .12s ease;
+  white-space: nowrap;
+}
+.v-tab.is-active .v-tab__label {
+  color: #e5e7eb;
+}
+.v-tab.is-active {
+  color: #e5e7eb;
+}
+.v-tab.is-active::after {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .35),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+.v-tab.is-active .v-tab__icon {
+  filter: grayscale(1) brightness(0) invert(1);
+}
+.v-tab.is-active:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 5px 10px rgba(0, 0, 0, .5),
+    inset 0 -1px 0 rgba(255, 255, 255, .1);
+}
+.v-tab.is-disabled {
+  opacity: .4;
+  pointer-events: none;
+  filter: grayscale(.6);
+}
+
+/* Placeholder body for a section tab with no content yet. */
+.section-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: var(--text-muted);
+}
+.section-placeholder__label { font-size: 26px; font-weight: 700; color: var(--text-secondary); }
+
+/* ---- Clear Screen countdown ---- */
+.clear-screen__ring {
+  width: 139px;
+  height: 139px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 55px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent-green);
+  border: 6px solid var(--accent-green-light);
+  animation: clear-screen-pulse 1s ease-in-out infinite;
+}
+@keyframes clear-screen-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* ---- KPI card (Irrigation live-tracking tiles) ---- */
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 21px 22px;
+  box-shadow: 0 2px 8px rgba(26, 29, 31, .08);
+}
+.kpi-card__label { font-size: 26px; font-weight: 700; color: var(--text-secondary); }
+.kpi-card__value {
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 500;
+  color: var(--accent-green-dark);
+  margin-top: 6px;
+}
+
+/* Compact readouts placed beneath the pivot on the Home screen — Angle /
+   Center Pressure / Hours on top, Rain Gauge / Last Tower Pressure /
+   Voltage below, same order as the platform's pincard KPIs. */
+.home-telemetry { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 8px; column-gap: 4px; }
+.home-telemetry__tile { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 6px; text-align: left; padding-left: 12px; }
+.home-telemetry__icon { color: var(--text-secondary); line-height: 0; flex-shrink: 0; }
+.home-telemetry__text { display: flex; flex-direction: column; min-width: 0; }
+.home-telemetry__value { font-family: var(--font-display); font-size: 21px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.home-telemetry__label { font-size: 13px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+/* Home's Operation summary card, replacing the telemetry row — Start
+   Mode / direction / Wet-Dry / Speed in one pill, matching the
+   platform's own Operation-summary look. */
+/* align-items: flex-start (not center) — with 2+ operations the card
+   grows taller (one pill per queued op), and centering would re-center
+   the whole row each time, sliding the arrows down. Top-aligning keeps
+   them planted at the exact same spot as the single-operation case. */
+.op-summary { display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 6px; width: 100%; }
+.op-summary__card { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; min-width: 0; min-height: 90px; margin: 0 auto; width: fit-content; }
+/* Same 3D-button treatment as .v-tab/.field-btn — gradient face, raised
+   edge, drop shadow, presses flat on tap — instead of the flat swatch
+   every other icon-only button on this page uses. */
+.op-summary__arrow {
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 2px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 4px 0 rgb(37 133 35 / 70%),
+    0 6px 10px rgba(0, 0, 0, .15);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+/* -10% (was 76px) — Home's own operation carousel only (see
+   components.js operationSummary's `arrow`). Segments' up/down scroll
+   button and Operations Review's own --lg arrow reuse this same base
+   class and stay at their original size, so this is a modifier, not a
+   change to the shared rule above. */
+.op-summary__arrow--home { width: 68px; height: 68px; }
+/* -10% (was 76px) — Segments' own up/down scroll pair only (see
+   placeholders.js scrollBtn). Same idea as --home above: a modifier, not
+   a change to the shared rule everyone else still uses at 76px. */
+.op-summary__arrow--segments { width: 68px; height: 68px; }
+/* Same -10% modifier, End Gun's own segment scroll pair (see
+   endGunSegments.js scrollBtn) — Operations Review's --lg arrow is the
+   only one left at 76px now. */
+.op-summary__arrow--endgun { width: 68px; height: 59px; }
+/* Crazy test — a hinged glass safety hatch over the Previous arrow
+   while it's locked (queue's edge), styled like a missile-launch button
+   cover: frosted glass panel + a hinge bar along the top edge. When the
+   arrow becomes tappable again the hatch flips up and out of the way.
+   Scoped to --home/--segments/--endgun so Operations Review's own --lg
+   arrow is untouched — pure decoration, doesn't block clicks
+   (pointer-events: none) and only actually animates if a future render
+   keeps this DOM node alive across the disabled/enabled swap instead of
+   rebuilding it (today's renderPage() rebuilds the whole page, so right
+   now this only shows the correct end state, not a live flip-open). */
+.op-summary__arrow--home,
+.op-summary__arrow--segments,
+.op-summary__arrow--endgun {
+  position: relative;
+  overflow: visible;
+}
+.op-summary__arrow--home::before,
+.op-summary__arrow--segments::before,
+.op-summary__arrow--endgun::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 8px;
+  right: 8px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e8ecef, #9aa3ab);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.op-summary__arrow--home::after,
+.op-summary__arrow--segments::after,
+.op-summary__arrow--endgun::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  transform-origin: top center;
+  transform: perspective(219px) rotateX(0deg);
+  transition: transform .5s cubic-bezier(.34, 1.4, .64, 1), opacity .3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+/* Icon under the closed hatch — a light, muted green instead of the
+   plain pale gray inline attribute, same idea as Start Date's own
+   glass-covered icon. */
+.op-summary__arrow--home.is-disabled svg,
+.op-summary__arrow--segments.is-disabled svg,
+.op-summary__arrow--endgun.is-disabled svg {
+  stroke: #5a9c72;
+}
+/* Open — flips up and fades away instead of staying visible standing up. */
+.op-summary__arrow--home:not(.is-disabled)::after,
+.op-summary__arrow--segments:not(.is-disabled)::after,
+.op-summary__arrow--endgun:not(.is-disabled)::after {
+  transform: perspective(299px) rotateX(-115deg) translateY(-2px);
+  opacity: 0;
+}
+.op-summary__arrow--home:not(.is-disabled)::before,
+.op-summary__arrow--segments:not(.is-disabled)::before,
+.op-summary__arrow--endgun:not(.is-disabled)::before {
+  opacity: 0;
+}
+.op-summary__arrow--home:not(.is-disabled) svg,
+.op-summary__arrow--segments:not(.is-disabled) svg,
+.op-summary__arrow--endgun:not(.is-disabled) svg {
+  stroke: var(--accent-green-dark);
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, .5))
+    drop-shadow(0 -1px 1px rgba(0, 0, 0, .2));
+}
+.op-summary__arrow:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    0 0 0 var(--border),
+    0 1px 2px rgba(0, 0, 0, .15);
+}
+/* No operation to page to (queue's edge) — grayed out and left sitting in
+   the pressed-in position permanently, instead of the raised idle face,
+   so it visibly reads as "nothing further this way" rather than just
+   "not clickable right now". No data-action on the element either (see
+   operationSummary), so it can't actually be tapped. */
+.op-summary__arrow.is-disabled {
+  cursor: default;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border-color: rgba(160, 168, 176, .4);
+  border-top-color: rgba(160, 168, 176, .4);
+  border-left-color: rgba(160, 168, 176, .4);
+  border-right-color: rgba(160, 168, 176, .4);
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .18),
+    0 0 0 rgba(160, 168, 176, .4);
+}
+.op-summary__title-row { display: flex; align-items: center; gap: 6px; }
+.op-summary__title { font-size: 19px; font-weight: 700; color: var(--accent-green-dark); }
+/* Flat metallic readout — same recipe as .flat-readout/field-btn.is-disabled
+   (green glass, no gloss/bezel, nothing to tap here). */
+.op-summary__pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 90px;
+  width: fit-content;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: normal;
+  transform: translateX(-10px);
+
+  /* Metallic gray */
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+
+  /* Borders with light top / dark bottom = directional reflection */
+  border: 1px solid rgba(0,0,0,.35);
+  border-top-color: rgba(0,0,0,.25);
+
+  /* Multi-layer shadows: inner highlight + inner depth + outer projection */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(0,0,0,.1),
+    0 3px 6px rgba(0,0,0,.28);
+
+  color: var(--accent-green-dark);
+}
+.op-summary__card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.op-summary__icon, .op-summary__sep { position: relative; }
+.op-summary__icon { display: flex; align-items: center; gap: 4px; line-height: 0; color: var(--accent-green-dark); }
+.op-summary__sep { color: rgba(23, 122, 58, .5); }
+
+/* Wet irrigation — blue glow pulse */
+@keyframes pill-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(30, 136, 229, .55), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1); }
+  50%   { box-shadow: 0 0 18px rgba(30, 136, 229, .85), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1); }
+}
+/* Wet irrigation — blue glow pulse (higher specificity to override .op-summary__pill color) */
+.op-summary__pill.op-summary__pill--wet {
+  background: linear-gradient(165deg, #bbdefb 0%, #e3f2fd 45%, #90caf9 100%);
+  border-color: rgba(13, 71, 161, .8);
+  box-shadow: 0 0 8px rgba(30, 136, 229, .65), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1);
+  animation: pill-glow 2s ease-in-out infinite;
+  color: #0d47a1 !important;
+}
+.op-summary__pill.op-summary__pill--wet .op-summary__icon,
+.op-summary__pill.op-summary__pill--wet .op-summary__sep { color: #0d47a1 !important; }
+
+/* Dry irrigation — earthy brown tint (higher specificity to override .op-summary__pill color) */
+.op-summary__pill.op-summary__pill--dry {
+  background: linear-gradient(165deg, #d7ccc8 0%, #efebe9 45%, #c8b8a8 100%);
+  border-color: rgba(62, 39, 35, .55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.28);
+  color: #3e2723 !important;
+}
+.op-summary__pill.op-summary__pill--dry .op-summary__icon,
+.op-summary__pill.op-summary__pill--dry .op-summary__sep { color: #3e2723 !important; }
+
+/* Fertigation mode — purple */
+.op-summary__pill.op-summary__pill--fertigation {
+  background: linear-gradient(165deg, #e0c3fc 0%, #f3e8fd 45%, #d4b8f0 100%);
+  border-color: rgba(124, 58, 237, .55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.28);
+  color: #5b21b6 !important;
+}
+.op-summary__pill.op-summary__pill--fertigation .op-summary__icon,
+.op-summary__pill.op-summary__pill--fertigation .op-summary__sep { color: #7c3aed !important; }
+
+/* Alert mode — red emergency */
+@keyframes pill-glow-alert {
+  0%, 100% { box-shadow: 0 0 6px rgba(211, 47, 47, .55), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1); }
+  50%   { box-shadow: 0 0 18px rgba(211, 47, 47, .85), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1); }
+}
+.op-summary__pill.op-summary__pill--alert {
+  background: linear-gradient(165deg, #ffcdd2 0%, #ffebee 45%, #ef9a9a 100%);
+  border-color: rgba(183, 28, 28, .8);
+  box-shadow: 0 0 8px rgba(211, 47, 47, .65), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -2px 4px rgba(0,0,0,.1);
+  animation: pill-glow-alert 2s ease-in-out infinite;
+  color: #b71c1c !important;
+}
+.op-summary__pill.op-summary__pill--alert .op-summary__icon,
+.op-summary__pill.op-summary__pill--alert .op-summary__sep { color: #b71c1c !important; }
+
+/* Home footer — Add/Remove Operation, same schedule-list controls as the
+   platform's irrigation scheduler. Both are plain .field-btn (same shape
+   as Speed/Irrigation Rate, side by side in that identical 2-col grid),
+   just centered text+icon instead of a value+edit-icon layout, and no
+   label above. Remove is grayed out (.is-disabled, same rule field-btn
+   already has) at just 1 operation; Add is always on. Remove active
+   reuses the red that Stop Pivot already uses. */
+/* Metallic shell — same frosted-glass recipe as the green pills, tinted
+   red instead. */
+.field-btn--danger:not(.is-disabled) {
+  background-color: rgba(160, 140, 140, .1);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .3) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .18) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(216, 200, 200, .22) 0%, rgba(216, 200, 200, .04) 45%, rgba(180, 160, 160, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(176, 160, 160, .55);
+  border-top-color: rgba(130, 110, 110, .6);
+  border-left-color: rgba(156, 140, 140, .6);
+  border-right-color: rgba(156, 140, 140, .6);
+  color: var(--accent-red-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(140, 90, 90, .2),
+    inset 0 -4px 6px rgba(165, 120, 120, .15),
+    0 2px 0 rgba(240, 150, 150, .4),
+    0 5px 0 rgba(122, 23, 40, .85),
+    0 8px 12px rgba(40, 30, 30, .25);
+  overflow: hidden;
+}
+.field-btn--danger:not(.is-disabled) svg {
+  stroke: var(--accent-red-dark);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.field-btn--danger:not(.is-disabled):active {
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--accent-red-dark),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+
+.operation-pivot-column { gap: 15px; }
+.home-log-button {
+  height: var(--field-height-lg);
+  width: 100%;
+  align-self: flex-start;
+  margin-top: 28px;
+  border-radius: 14px;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  color: var(--accent-green-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(120, 200, 150, .4),
+    0 5px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+.home-log-button:active {
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--accent-green-dark),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+
+/* Operation dashboard: a dense two-column grid alongside the pivot. */
+.operation-info-column { flex: 1.5; display: flex; flex-direction: column; gap: 15px; min-width: 0; justify-content: flex-start; }
+.operation-info-column .si-actions { margin-top: auto; }
+.operation-telemetry {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+/* Metallic shell — same neutral-gray glass recipe as nav-btn/field-btn,
+   label/value recolored chrome via background-clip instead of the flat
+   surface fill + plain text everyone else uses. */
+.operation-telemetry .kpi-card {
+  min-height: 92px;
+  padding: 16px 14px;
+  box-sizing: border-box;
+  min-width: 0;
+
+  /* Metallic chrome — exact same recipe as op-summary__pill */
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0,0,0,.35);
+  border-top-color: rgba(0,0,0,.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -2px 4px rgba(0,0,0,.1),
+    0 3px 6px rgba(0,0,0,.28);
+
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.operation-telemetry .kpi-card__label {
+  font-size: 26px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+.operation-telemetry .kpi-card__value {
+  font-size: 38px;
+  line-height: 1;
+  white-space: nowrap;
+  color: #4e5c47;
+  font-weight: 700;
+}
+/* Stop Pivot here is the same size as Home's Start/Stop pair — same
+   .action-row grid (2 columns), just with only the Stop cell filled —
+   pinned to the bottom of the pivot column instead of Home's fixed gap. */
+.operation-pivot-column .action-row { margin-top: 8px; }
+/* Events & Operations sits a bit higher here than on Home — the
+   auto-margin on .action-row below absorbs the freed space, so nothing
+   else on the screen shifts. */
+.operation-pivot-column .home-log-button { margin-top: 4px; }
+
+/* Events / Operations history, shared as two tabs in one screen. */
+.activity-log-page { position: relative; flex-direction: column; padding: 12px 28px 120px; gap: 10px; }
+.activity-log__table-area { position: relative; flex: 1; min-height: 0; }
+/* Pager: pinned to the page's own reserved bottom strip */
+.activity-log-page .alarms-page__pager {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 12px;
+  z-index: 10;
+}
+.activity-log__table-wrap { flex: 0 0 auto; min-height: 0; overflow: auto; margin-right: 92px; border: 1px solid var(--border); background: var(--surface); max-height: 490px; }
+.activity-log__table { width: 100%; border-collapse: collapse; font-size: 16px; }
+.activity-log__table th, .activity-log__table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.activity-log__table th { padding-top: 10px; padding-bottom: 10px; color: var(--text-primary); font-size: 22px; font-weight: 700; background: #fbfcfc; white-space: nowrap; }
+.activity-log__table td { color: var(--text-secondary); font-size: 22px; }
+.activity-log__table th:first-child, .activity-log__table td:first-child { width: 54px; padding-right: 0; }
+.activity-log__table tr:last-child td { border-bottom: none; }
+/* Standard Metallic accent shell — same neutral glass + green bottom
+   degrau + green icon/text as nav-btn.is-active/alarm-pager-btn's own
+   next/prev, not a solid green fill — a square +/− toggle instead of the
+   flat gray circle it used to be. */
+.activity-log__expand {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  color: #4e5c47;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.activity-log__expand::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+}
+
+/* Connectivity page: hide scrollbar — scroll only via buttons */
+#connectivity-scroll-area {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#connectivity-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+.activity-log__expand:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.activity-log__expand:active::after {
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+.activity-log__detail-row td { padding: 12px 15px 15px; background: #fafbfb; }
+.activity-log__detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 46px; padding: 18px 21px; border-radius: var(--radius-md); background: var(--surface); box-shadow: 0 1px 5px rgba(26, 29, 31, .08); }
+.activity-log__detail-grid p { margin: 0 0 8px; font-size: 18px; color: var(--text-muted); }
+.activity-log__detail-grid strong, .activity-log__operation-detail > strong { color: var(--text-primary); font-weight: 700; }
+.activity-log__detail-spaced { margin-top: 28px !important; }
+.activity-log__operation-detail { padding: 4px 4px 0; font-size: 15px; }
+.activity-log__detail-grid--operation { margin-top: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); box-shadow: none; padding: 8px 0 0; }
+/* Table's own up/down paging, replacing the native scrollbar (hidden via
+   .no-scrollbar on .activity-log__table-wrap above) — same shell as
+   Segments' own up/down pair (.op-summary__arrow--segments, applied
+   alongside these two on the elements themselves). Table-wrap gives up
+   its own right margin (see above) to make room for these two instead of
+   the table's edge — sitting in that gutter, off to the side, not
+   floating on top of the table's own content. Pinned to the page's own
+   top-right/bottom-right corners so they stay put regardless of how tall
+   the table itself is. */
+/* !important: Original theme's own .op-summary__arrow--segments:not(.is-
+   disabled) rule (original-theme.css) re-declares position: relative at
+   much higher specificity (:root[data-theme] + :not()) and loads after
+   this file, so a plain position: absolute here would lose the fight and
+   these two would fall back into normal flow, side by side with the
+   table instead of stacked at its corners. */
+.activity-log__scroll-btn {
+  position: absolute !important;
+  right: 0;
+  z-index: 4;
+  width: 80px;
+  height: 80px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  overflow: hidden;
+  cursor: pointer;
+}
+.activity-log__scroll-btn--up { top: 0; }
+.activity-log__scroll-btn--down { bottom: 72px; }
+.activity-log__scroll-btn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+}
+.activity-log__scroll-btn > * {
+  position: relative;
+  z-index: 1;
+}
+.activity-log__scroll-btn svg {
+  stroke: #4e5c47;
+}
+
+/* ---- File card (VRI → Selection: Local / USB prescription lists) ---- */
+.file-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.file-card__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.file-list { flex: 1; overflow-y: auto; min-height: 0; }
+.file-list { flex: 1; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 6px; }
+.file-item {
+  padding: 3px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  max-width: 190px;
+  margin-left: 50px;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.file-item:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.file-item__face {
+  width: 100%;
+  padding: 14px 14px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+.file-item.is-active .file-item__face {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .35),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+  color: #e5e7eb;
+  text-shadow: none;
+}
+
+/* ---- Diagnosis table (VRI → Diagnosis, Maintenance → Logs) ---- */
+/* Column count is per-use: set --diag-table-cols on .diag-table (defaults
+   to 5, VRI → Diagnosis's count) rather than hardcoding it here, so the
+   same table works for Logs' 3 columns too. */
+/* Wraps any .diag-table (Logs, GPS, Errors, Devices, Energy, Version,
+   VRI → Diagnosis) together with its own up/down paging pair — same
+   shell/positioning as Activity Log's .activity-log__table-area, just
+   generalized to any diag-table instead of that one specific table.
+   Segments tables (.diag-table.segments-table) opt out — they already
+   page by selecting a row (select-prev/next-segment), not raw scroll. */
+.diag-table-area { position: relative; flex: 1; min-height: 0; display: flex; }
+.diag-table-area .diag-table { margin-right: 92px; scrollbar-width: none; -ms-overflow-style: none; }
+.diag-table-area .diag-table::-webkit-scrollbar { display: none; }
+.diag-table__scroll-btn {
+  position: absolute !important;
+  right: 0;
+  z-index: 4;
+  width: 80px;
+  height: 80px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  transition: transform .08s ease, box-shadow .08s ease;
+  cursor: pointer;
+}
+.diag-table__scroll-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.diag-table__scroll-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.diag-table__scroll-btn--up { top: 0; }
+.diag-table__scroll-btn--down { bottom: 0; }
+.diag-table__scroll-face {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+}
+.diag-table {
+  --diag-table-cols: 5;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(165deg, #f4f4f4 0%, #ffffff 55%, #efefef 100%);
+}
+.diag-table__row { display: grid; grid-template-columns: var(--diag-table-cols-template, repeat(var(--diag-table-cols), 1fr)); }
+.diag-table__row--header {
+  position: sticky;
+  top: 0;
+  background: #c4c9ce;
+  z-index: 1;
+}
+.diag-table__cell {
+  padding: 18px 12px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.diag-table__cell:last-child { border-right: none; }
+.diag-table__cell--left { text-align: left; }
+.diag-table__row--header .diag-table__cell {
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
+}
+.diag-table__row:last-child .diag-table__cell { border-bottom: none; }
+
+/* ---- Segments table (Irrigation → Segments) ---- */
+/* Spreadsheet-style stand-in for the segment picker chips: each row is the
+   whole segment (name/color, auto Start/End Angle, trash), tappable to
+   select it — same active highlight as segment-btn, just a colored left
+   rule + tint instead of a filled circle. */
+/* Sized to its own rows — header + 1 row with a single segment, growing
+   as more get added — instead of always stretching to fill the card and
+   leaving a slab of empty gray below a short list. flex-grow:0 is what
+   does that (basis:auto = height of header+rows); flex-shrink:1 is what
+   caps it once that no longer fits the card, at which point it scrolls —
+   only by the up/down buttons flanking Add Segment, never by dragging:
+   overflow stays hidden so there's no scrollbar and no touch/wheel scroll,
+   yet scrollBy() from those buttons still moves it (setting scrollTop
+   works on a hidden-overflow box same as an auto one). Header stays
+   pinned via .diag-table__row--header's own sticky either way. */
+.segments-table { flex: 0 1 auto; overflow-y: auto; }
+.segments-table::-webkit-scrollbar { display: none; }
+.segments-table .diag-table__row--header { background: #eef0f2; }
+.segments-table .diag-table__row--header .diag-table__cell { font-size: 23px; white-space: nowrap; }
+.segments-table__row { cursor: pointer; transition: background 0.12s ease; }
+.segments-table__row .diag-table__cell { font-size: 21px; font-weight: 600; border-left: 2px solid transparent; padding-top: 21px; padding-bottom: 21px; }
+.segments-table__row .diag-table__cell:first-child { border-left-color: transparent; }
+.segments-table__row.is-active { background: color-mix(in srgb, var(--segments-table-color) 16%, #ffffff); }
+.segments-table__row.is-active .diag-table__cell:first-child { border-left-color: var(--segments-table-color); }
+.segments-table__name { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.segments-table__dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }
+/* The whole cell is the tap target now, not just the icon — bigger, more
+   forgiving hit area than a lone glyph, same idea as the row itself being
+   tappable instead of just its text. */
+.segments-table__trash-cell { display: flex; align-items: center; justify-content: center; border-right: none; padding: 8px 6px; cursor: pointer; border-radius: var(--radius-sm); transition: background 0.12s ease; }
+.segments-table__trash-cell:active { background: rgba(179, 38, 30, 0.12); }
+
+/* ---- Segment edit popup (Irrigation → Segments row tap) — same overlay
+   idea as the numeric keypad, scoped to .page instead of the whole
+   screen, and always underneath the keypad it opens (z-index below it) so
+   editing a field reads as "keypad on top of the popup on top of the
+   page", not two competing sheets. ---- */
+.segment-popup-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+}
+.segment-popup {
+  width: 400px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+.segment-popup__head { display: flex; align-items: center; gap: 12px; }
+.segment-popup__dot { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.segment-popup__title { flex: 1; font-size: 26px; font-weight: 700; color: var(--text-secondary); }
+.segment-popup__fields { display: flex; flex-direction: column; gap: 18px; }
+.segment-popup__actions { display: flex; gap: 14px; margin-top: 6px; }
+.segment-popup__actions .field-btn { flex: 1; }
+
+/* ---- Log sub-tabs (Maintenance → Logs: GUI / IO / Irrigation / Water) —
+    each tab is a self-contained mini dual-toggle (housing + face). ---- */
+.log-subtabs {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+}
+.log-subtab {
+  flex: 1;
+  padding: 3px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.log-subtab:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.log-subtab__face {
+  width: 100%;
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 21px;
+  font-weight: 700;
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+.log-subtab__face.is-active {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .35),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+  color: #e5e7eb;
+  text-shadow: none;
+}
+
+/* ---- Pivot dial card (shared by Home + Irrigation) ---- */
+.dial-card {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  max-height: 600px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 0;
+  padding: 40px;
+}
+.dial-card__bg {
+  position: absolute;
+  inset: 2px 14px 1px 8px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgb(109 109 109 / 12%), rgb(255 255 255 / 2%));
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.35),
+    0 2px 8px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.06);
+  z-index: 0;
+  pointer-events: none;
+  margin-left: -20px;
+}
+.dial-card__svg { position: relative; top: -10px; overflow: visible; z-index: 2; margin-left: -20px; }
+.dial-card__gps {
+  position: absolute;
+  top: 14px;
+  left: -6px;
+  z-index: 3;
+  font-family: IBM Plex Sans;
+  font-size: 16px;
+  font-weight: 800;
+  color: #22c55e;
+  text-shadow: 0 0 6px rgba(34,197,94,0.8), 0 0 2px rgba(0,0,0,0.5);
+  animation: dial-gps-blink 2s step-end infinite;
+  opacity: 1;
+  pointer-events: none;
+}
+@keyframes dial-gps-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+/* Test — exploded-pie pop for the segment currently selected on the
+   Segments/End Gun dials: the wedge itself is already nudged outward
+   (transform, see customSegments in components.js); this just adds the
+   drop-shadow that sells it as lifted off the dial instead of just moved. */
+.dial-card__segment--active {
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .5)) drop-shadow(0 0 6px rgba(255, 255, 255, .35));
+  transition: transform .18s ease;
+}
+/* End Gun segments: selected — flat (no pop-out), bright color,
+   subtle white glow so it still reads as "selected" without lifting
+   off the dial. */
+.dial-card__segment--endgun.dial-card__segment--active {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, .55));
+}
+.dial-card__status {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-radius: 0 0 15px 15px;
+  color: #fff;
+  font-family: var(--font-status);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Metallic/chrome test — Energized Panel status pill only, scoped by its
+   inline bg color (#dac422) so no other status (Irrigating, Dry Moving, …)
+   is touched. Inline style wins specificity over any selector, so the
+   override needs !important here. Brushed-brass gradient instead of the
+   flat yellow fill, chrome text via background-clip. */
+.dial-card__status[style*="dac422"] {
+  background: linear-gradient(180deg, #ffe233 0%, #e1c44c 25%, #d6b63c 50%, #ddc355 75%, #f7e576 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .7),
+    inset 0 -2px 4px rgba(0, 0, 0, .2);
+}
+.dial-card__status[style*="dac422"] span:not(.dial-card__status-dot) {
+  background: linear-gradient(234deg, #ffffff 0%, #ffffff 40%, #ffffff 52%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+}
+.dial-card__status[style*="dac422"] .dial-card__status-dot {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #d8d8d8 40%, #7a7a7a 75%, #4a4a4a 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .4),
+    0 0 0 2px rgba(255, 255, 255, .25);
+}
+/* Metallic/chrome test — Irrigating status pill, same recipe as Energized
+   Panel above but brushed-steel-blue instead of brushed brass, scoped by
+   its inline bg color (#1d4ed8) so no other status is touched. */
+.dial-card__status[style*="1d4ed8"] {
+  background: linear-gradient(180deg, #a9c3f6 0%, #5a84dd 25%, #3660c4 50%, #5a84dd 75%, #a9c3f6 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .7),
+    inset 0 -2px 4px rgba(0, 0, 0, .2);
+}
+.dial-card__status[style*="1d4ed8"] span:not(.dial-card__status-dot) {
+  background: linear-gradient(234deg, #ffffff 0%, #ffffff 40%, #ffffff 52%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
+}
+.dial-card__status[style*="1d4ed8"] .dial-card__status-dot {
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #d8d8d8 40%, #7a7a7a 75%, #4a4a4a 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .4),
+    0 0 0 2px rgba(255, 255, 255, .25);
+}
+.dial-card__status-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .4);
+  flex-shrink: 0;
+}
+.dial-card__status--metrics {
+  gap: 8px;
+  padding: 12px 10px;
+  font-size: 14px;
+}
+.dial-card__direction-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+}
+.dial-card__direction-icon .asset-icon {
+  width: clamp(18px, 3vw, 25px);
+  height: clamp(18px, 3vw, 25px);
+  object-fit: contain;
+  filter: invert(1);
+}
+.dial-card__status--metrics span + span::before { content: '•'; margin-right: 8px; opacity: .8; }
+
+/* Plain field label (Enable Rain Gauge, Module/Span picker, Start/End
+   Time:, …) — the same weight+size+color repeated next to a control
+   across several pages. */
+.field-label { font-size: 30px; font-weight: 700; color: var(--text-secondary); }
+
+/* ---- Section title (hub sub-page headings: Segment N, System, Days of
+   the week, Module N, …) — weight + color are the shared, always-the-same
+   part; font-size/margin/align vary per use and stay inline on the tag. */
+.section-title { font-size: 37px; font-weight: 800; color: var(--text-secondary); }
+
+/* ---- Segments row (Home, below the dial) ---- */
+.segments { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.segments__grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
+/* Same raised-card 3D shell as .segment-btn--pill/.field-btn/.nav-btn —
+   neutral glass unselected, green glass fill + degrau when active —
+   instead of the flat solid-green square it used to be. VRI → Test's
+   solenoid grid toggles individual modules on/off with this. */
+.segment-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 2px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  color: #5b6167;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 4px 0 rgba(120, 130, 140, .7),
+    0 6px 10px rgba(30, 40, 50, .2);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+/* Always on, not just on :hover — touch panel, same reasoning as the
+   .btn-touch brightness pin up top. Excludes --sm (its own rule below
+   sets a different, dimmer tint) — :not(.is-active):not(.is-disabled)
+   alone outranks a single-class selector like .segment-btn--sm, so
+   without this exclusion it would win the tie and leak this brighter
+   tint onto --sm's own instances (Automatic Zero Angle's N/E/S/W). */
+.segment-btn:not(.segment-btn--sm):not(.is-active):not(.is-disabled) { background-color: rgba(160, 170, 180, .18); }
+.segment-btn:not(.is-disabled):active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .25),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Active state for the base (large) segment-btn — VRI → Test's solenoid
+   grid toggles individual modules on/off, unlike Home's plain shortcuts. */
+.segment-btn.is-active {
+  background-color: rgba(150, 190, 165, .35);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  color: var(--accent-green-dark);
+  border-color: rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .7),
+    inset 2px 0 2px rgba(255, 255, 255, .25),
+    inset -2px 0 5px rgba(90, 140, 110, .2),
+    inset 0 -4px 6px rgba(120, 165, 140, .15),
+    0 4px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+}
+.segment-btn.is-active:active {
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Metallic shell — same checkbox/nav-btn glass recipe: inactive = gray
+   glass with a green outline, active = green glass fill. */
+.segment-btn--sm {
+  width: 54px;
+  height: 54px;
+  font-size: 21px;
+  border-radius: 12px;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
+  color: var(--accent-green-dark);
+  border: 2px solid var(--accent-green);
+  box-shadow: inset 0 2px 4px rgba(30, 40, 50, .15);
+}
+/* Same active look as the plain (large) .segment-btn — Automatic Zero
+   Angle's N/E/S/W picker should read as "selected" the same way VRI →
+   Test's module grid does, not its own slightly different glass tint. */
+.segment-btn--sm.is-active {
+  background-color: rgba(150, 190, 165, .35);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  color: var(--accent-green-dark);
+  border-color: rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .7),
+    inset 2px 0 2px rgba(255, 255, 255, .25),
+    inset -2px 0 5px rgba(90, 140, 110, .2),
+    inset 0 -4px 6px rgba(120, 165, 140, .15),
+    0 4px 0 rgba(23, 122, 58, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+}
+.segment-btn--sm.is-active:active {
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .3),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+.segment-btn--sm.is-disabled { background: #f4f5f6; color: var(--text-disabled); border-color: var(--border); cursor: not-allowed; }
+/* Colored variant (End Gun's picker): each square carries its own segment
+   color (set inline per-slot) instead of the plain green, so the number
+   you tap visually matches the wedge it selects on the dial. A touch
+   smaller than the plain .segment-btn--sm used elsewhere (Segments,
+   Auxiliary) — scoped to this class alone so those stay untouched. */
+.segment-btn--colored { width: 46px; height: 46px; font-size: 17px; color: #ffffff; font-weight: 800; }
+.segment-btn--colored.is-active { box-shadow: 0 0 0 2px #fff, 0 0 0 5px #1a1d1f; }
+.segment-btn--colored.is-disabled { background: #f4f5f6 !important; border-color: var(--border) !important; color: var(--text-disabled); }
+.segment-btn--add.is-disabled { border-color: var(--border); color: var(--text-disabled); cursor: not-allowed; }
+/* Text-label pill variant (auto width, e.g. Auto-reversal's Stop Condition)
+   — same raised-card 3D shell as .nav-btn/.field-btn: white/gray when
+   unselected, filled accent green with the deeper "pressed" shadow when
+   active, flat gray (no shadow) when the whole group is disabled. */
+/* Metallic shell — same neutral-gray/green glass recipe as nav-btn/v-tab:
+   inactive = gray glass, active = green glass tint. */
+.segment-btn--pill {
+  width: auto;
+  height: auto;
+  padding: 12px 21px;
+  font-size: 22px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  background-color: rgba(140, 150, 160, .1);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 2px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  color: #5b6167;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 4px 0 rgba(120, 130, 140, .7),
+    0 6px 10px rgba(30, 40, 50, .2);
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+/* Always on, not just on :hover — this is a touch panel, a pointer never
+   just rests over a button without tapping it, so a hover-only highlight
+   would never show up for real. Same reasoning as the .btn-touch
+   brightness pin up top. */
+.segment-btn--pill:not(.is-active):not(.is-disabled) { background-color: rgba(160, 170, 180, .18); }
+.segment-btn--pill:not(.is-disabled):active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .25),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 0 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Same solid green fill as the plain .field-btn (e.g. Auto-reversal's
+   own Wait Time chevron next to this) instead of the translucent green
+   glass tint — a selected pill reads as "on" the same way every other
+   solid-green control in the app does. */
+.segment-btn--pill.is-active {
+  background-color: var(--accent-green);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .12) 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .4);
+  border-top-color: rgba(255, 255, 255, .4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -2px 5px rgba(0, 0, 0, .2),
+    0 5px 0 var(--accent-green-dark),
+    0 8px 12px rgba(0, 0, 0, .25);
+}
+.segment-btn--pill.is-active:active {
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--accent-green-dark),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Same green-glass-plus-riveted-glass-plate look as .field--config's own
+   disabled readouts (Time, Date, Irrigation Rate) instead of the flat
+   gray fill — a locked-out pill (whole group disabled, or this specific
+   option unreachable) reads as "sealed shut", not just grayed out. */
+.segment-btn--pill.is-disabled {
+  background-color: rgba(150, 190, 165, .35);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 2px solid rgba(160, 168, 176, .55);
+  color: var(--text-disabled);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .5), inset 0 -2px 4px rgba(90, 140, 110, .2);
+  cursor: not-allowed;
+}
+.segment-btn--pill.is-disabled::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .85) 0%, rgba(220, 230, 240, .35) 35%, rgba(180, 200, 220, .25) 60%, rgba(255, 255, 255, .6) 100%);
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-top: 2px solid rgba(150, 165, 180, .9);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, .9),
+    inset 0 -2px 6px rgba(0, 0, 0, .08),
+    0 2px 4px rgba(0, 0, 0, .15);
+  pointer-events: none;
+  z-index: 2;
+}
+.segment-btn--add {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px dashed var(--text-primary);
+}
+.segment-btn--remove { background: #e02424; border-color: #e02424; color: #fff; }
+.segment-btn--remove.is-disabled { background: transparent; border-color: var(--border); color: var(--border); }
+.segment-btn--locked {
+  border: 2px solid var(--border);
+  background-color: #f4f5f6;
+  background-image: repeating-linear-gradient(45deg, var(--border) 0, var(--border) 2px, transparent 2px, transparent 8px);
+  cursor: not-allowed;
+}
+
+/* ---- VRI module buttons (Test grid) — same chrome 3D housing as
+   dual-toggle__housing / dual-toggle__face, sized for a compact grid. ---- */
+.vri-module-btn {
+  width: 64px;
+  height: 64px;
+  padding: 3px;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.vri-module-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.vri-module-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.vri-module-btn__face {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
+}
+.vri-module-btn__face.is-on {
+  background: linear-gradient(165deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .35),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+  color: #e5e7eb;
+  text-shadow: none;
+}
+
+/* ---- Start/Stop action row (Home) ---- */
+.action-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; margin-top: 21px; }
+.action-btn {
+  height: 88px;
+  width: 100%;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 2px solid rgba(255, 255, 255, .4);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .12) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -2px 5px rgba(0, 0, 0, .2),
+    0 6px 0 var(--btn-shadow-color),
+    0 12px 15px rgba(0, 0, 0, .3);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.action-btn--stop { background-color: var(--accent-red); --btn-shadow-color: var(--accent-red-dark); }
+.action-btn--start { background-color: #0fa968; --btn-shadow-color: #0b7d4f; }
+.action-btn:active {
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--btn-shadow-color),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+/* Stop Pivot — metallic glass silver + red icon */
+.action-btn--stop[data-action="stop-pivot"] {
+  background-color: rgba(140, 150, 160, .12);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .16) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .08) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(180, 190, 200, .4),
+    0 5px 0 rgba(100, 110, 120, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+}
+/* Start Pivot — metallic glass silver + green icon */
+.action-btn--start[data-action="start-pivot"] {
+  background-color: rgba(140, 150, 160, .12);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .16) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .08) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(110, 120, 130, .6);
+  border-left-color: rgba(140, 148, 156, .6);
+  border-right-color: rgba(140, 148, 156, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(180, 190, 200, .4),
+    0 5px 0 rgba(100, 110, 120, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  position: relative;
+}
+.action-btn--stop[data-action="stop-pivot"]::before,
+.action-btn--start[data-action="start-pivot"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.action-btn--stop[data-action="stop-pivot"] svg {
+  fill: #ff3333;
+  filter: drop-shadow(0 0 6px rgba(255, 51, 51, .55)) drop-shadow(0 0 14px rgba(255, 51, 51, .3));
+}
+.action-btn--start[data-action="start-pivot"] svg {
+  fill: #22c55e;
+  filter: drop-shadow(0 0 6px rgba(34, 197, 94, .55)) drop-shadow(0 0 14px rgba(34, 197, 94, .3));
+}
+
+/* Brilho discreto na parte de baixo */
+.action-btn--stop[data-action="stop-pivot"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 60, 60, .5) 50%, transparent 100%);
+  box-shadow: 0 -2px 10px rgba(255, 60, 60, .25);
+  pointer-events: none;
+}
+.action-btn--start[data-action="start-pivot"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(40, 220, 100, .5) 50%, transparent 100%);
+  box-shadow: 0 -2px 10px rgba(40, 220, 100, .25);
+  pointer-events: none;
+}
+
+.page--home .field__label { text-align: left; font-size: 27px; }
+
+/* System: same sizing as Pumping's own dense fields (.field--compact's
+   26px label, and the plain config-page default 66px/21px button — Pumping
+   never overrides that part) — 7 fields now share the left column (used to
+   be 4), so the label still needs to come down from the config-page
+   default, just matched to what Pumping already settled on instead of a
+   one-off size, scoped to this page only. */
+.page--system .field--config .field__label { font-size: 26px; white-space: nowrap; }
+.page--system .field--config .field-btn { height: 66px; font-size: 21px; }
+
+/* Location: same idea as System above — now 4 fields (Center Position,
+   Total Irrigated Radius, Maximum Working Angle, Zero Angle Position)
+   stacked in the right column instead of 3, so the config-page default
+   36px label is trimmed down a bit to keep it from crowding, scoped to
+   this page only. */
+.page--location .field--config .field__label { font-size: 28px; }
+
+/* Datasheet: 3-col grid, labels need to be smaller so they don't crowd */
+.datasheet-grid .field--config .field__label { font-size: 22px; white-space: nowrap; }
+.page--location .field--config .field-btn { font-size: 19px; }
+
+
+
+/* ---- QWERTY overlay (Equipment Name, radio IDs, …) — wider shell, rows
+   of letters instead of the numeric 3-column grid. ---- */
+.keypad--text { width: 619px; }
+.keypad__grid--text { display: flex; flex-direction: column; gap: 8px; }
+.keypad__row { display: flex; gap: 8px; }
+.keypad__row--indent { padding: 0 22px; }
+.keypad__key--text { flex: 1; height: 48px; font-size: 18px; }
+.keypad__key--wide { flex: 1.6; height: 48px; }
+.keypad__key--space { flex: 1; height: 48px; font-size: 15px; color: var(--text-secondary); }
+.keypad__key--wide.is-active { background: var(--accent-green); color: #fff; }
+.keypad__shift-icon { transform: rotate(180deg); }
+
+/* ---- Slider (Config brightness) ---- */
+.slider { position: relative; height: 32px; margin-top: 6px; display: flex; align-items: center; }
+/* Metallic shell — same neutral-gray glass recipe as the rest of the
+   Config/System buttons, track+fill instead of the flat color bars. */
+.slider__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 15px;
+  border-radius: 8px;
+  background-color: rgba(190, 180, 170, .45);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  box-shadow: inset 0 2px 4px rgba(30, 40, 50, .15);
+}
+.slider__fill {
+  position: absolute;
+  left: 0;
+  height: 15px;
+  border-radius: 8px;
+  background-color: rgba(31, 157, 76, .75);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .6), inset 0 -2px 4px rgba(23, 122, 58, .3);
+  transition: width .1s ease;
+}
+/* Chrome ball — same recipe as the Energized Panel status dot: a
+   radial highlight sliding to a dark rim, reads as a polished metal
+   knob instead of flat gray glass. */
+.slider__thumb {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, #d8d8d8 40%, #7a7a7a 75%, #4a4a4a 100%);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .9),
+    inset 0 -1px 1px rgba(0, 0, 0, .4),
+    0 0 0 2px rgba(255, 255, 255, .25),
+    0 2px 5px rgba(0, 0, 0, .3);
+  transition: left .1s ease;
+}
+.slider__steps { position: absolute; inset: 0; display: flex; }
+.slider__step { flex: 1; height: 100%; cursor: pointer; }
+
+.dp-dual {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+.dp-dual .field { gap: 12px; }
+
+/* ================================================================
+   Date/Time Picker (dp-stepper) — +/- button stepper grid for
+   Day / Month / Year / Hour / Minute, same overlay shell as keypad.
+   ================================================================ */
+.dp-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 18px 8px 28px;
+  user-select: none;
+}
+.dp-stepper__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 18px;
+}
+.dp-stepper__group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 101px;
+}
+.dp-stepper__label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 10px;
+}
+.dp-stepper__controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.dp-stepper__btn {
+  width: 72px;
+  height: 55px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(140, 150, 160, .14);
+  border: 1px solid rgba(160, 168, 176, .5);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .5),
+    0 2px 0 rgba(120, 130, 140, .55);
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.dp-stepper__btn:not(.is-disabled):active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, .2),
+    0 0 0 rgba(120, 130, 140, 0);
+}
+.dp-stepper__btn svg {
+  width: 28px;
+  height: 28px;
+}
+.dp-stepper__val {
+  width: 95px;
+  height: 77px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: rgba(140, 150, 160, .1);
+  border: 1px solid rgba(160, 168, 176, .4);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+/* ================================================================
+   PIN Screen
+   ================================================================ */
+.pin-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+.pin-card {
+  width: 480px;
+  background: var(--surface);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.pin-card--wide {
+  width: 980px;
+  max-width: 95vw;
+}
+.pin-title { font-size: 56px; font-weight: 700; color: var(--text-secondary); text-align: center; }
+.pin-dots { display: flex; gap: 18px; margin: 10px 0; }
+.pin-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-muted); background: transparent; transition: background .15s ease, border-color .15s ease; }
+.pin-dot.is-filled { background: var(--accent-green); border-color: var(--accent-green); }
+.pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+.pin-grid > .pin-row { grid-column: span 3; }
+.pin-row { display: flex; gap: 8px; justify-content: center; }
+.pin-row > .pin-key { flex: 1; min-width: 0; }
+.pin-key {
+  height: 82px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  font-weight: 700;
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  background-color: rgba(140, 150, 160, .12);
+  background-image:
+    linear-gradient(100deg, transparent 16%, rgba(255, 255, 255, .16) 24%, transparent 32%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 255, 255, .08) 64%, transparent 70%),
+    linear-gradient(180deg, rgba(200, 208, 216, .22) 0%, rgba(200, 208, 216, .04) 45%, rgba(160, 170, 180, .06) 100%);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(160, 168, 176, .55);
+  border-top-color: rgba(180, 190, 200, .6);
+  border-left-color: rgba(170, 180, 190, .6);
+  border-right-color: rgba(170, 180, 190, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(90, 110, 140, .2),
+    inset 0 -4px 6px rgba(120, 140, 165, .15),
+    0 2px 0 rgba(180, 190, 200, .4),
+    0 5px 0 rgba(120, 130, 140, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+  cursor: pointer;
+}
+.pin-key:active {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, .2),
+    inset 0 -1px 1px rgba(255, 255, 255, .1),
+    0 0 0 rgba(23, 122, 58, .85),
+    0 1px 2px rgba(30, 40, 50, .15);
+}
+.pin-key--back {
+  background-color: #ff5d5d;
+  border: 1px solid #ffffff94;
+  border-top-color: rgba(220, 160, 160, .6);
+  border-left-color: rgba(210, 140, 140, .6);
+  border-right-color: rgba(210, 140, 140, .6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 2px 0 2px rgba(255, 255, 255, .2),
+    inset -2px 0 5px rgba(140, 90, 90, .2),
+    inset 0 -4px 6px rgba(100, 20, 20, .15),
+    0 2px 0 rgba(200, 120, 120, .4),
+    0 5px 0 rgba(153, 27, 27, .85),
+    0 8px 12px rgba(30, 40, 50, .25);
+}
+.pin-key--back:active {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, .2),
+    inset 0 -1px 1px rgba(255, 255, 255, .1),
+    0 0 0 rgba(153, 27, 27, .85),
+    0 1px 2px rgba(30, 40, 50, .15);
+}
+.pin-actions { display: flex; width: 100%; margin-top: 14px; }
+.pin-action,
+.keypad__action {
+  flex: 1;
+  height: 92px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, .4);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .12) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    inset 0 -2px 5px rgba(0, 0, 0, .2),
+    0 6px 0 var(--btn-shadow-color),
+    0 10px 14px rgba(0, 0, 0, .3);
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+  cursor: pointer;
+}
+.pin-action:active,
+.keypad__action:active {
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, .4),
+    inset 0 -1px 0 rgba(255, 255, 255, .15),
+    0 0 0 var(--btn-shadow-color),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+.pin-action--cancel,
+.keypad__action--cancel { background-color: var(--accent-red); --btn-shadow-color: #991b1b; }
+.pin-action--confirm,
+.keypad__action--confirm { background-color: var(--accent-green); --btn-shadow-color: #0b7d4f; }
+
+/* ---- Keypad overlay (shared by numeric keypad + date picker + text input) ---- */
+.keypad-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.keypad {
+  width: 440px;
+  background: var(--surface);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.keypad--picker {
+  width: 680px;
+  max-width: 90vw;
+  padding: 36px 32px 50px;
+  gap: 24px;
+}
+.keypad__title {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--accent-green);
+  text-align: center;
+}
+.keypad__actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+/* Date-picker Date/Time buttons — same chrome/glass look as dual-toggle__face.is-off */
+.field-btn[data-action="dp-edit-date"],
+.field-btn[data-action="dp-edit-time"] {
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+  color: #4e5c47;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+.field-btn[data-action="dp-edit-date"] .field-btn__icon svg,
+.field-btn[data-action="dp-edit-time"] .field-btn__icon svg {
+  stroke: #4e5c47;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5));
+}
+.field-btn[data-action="dp-edit-date"]:active:not(.is-disabled),
+.field-btn[data-action="dp-edit-time"]:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .15);
+}
+
+/* ---- Smart Irrigation — Glass Start/Stop buttons ---- */
+.action-btn--glass-housing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  padding: 5px;
+  background: linear-gradient(165deg, #4a5058 0%, #5c6570 45%, #3a4148 100%);
+  border: 3px solid rgba(0, 0, 0, .75);
+  border-top-color: rgba(0, 0, 0, .55);
+  border-bottom-color: rgba(0, 0, 0, .9);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, .5),
+    inset 0 1px 0 rgba(255, 255, 255, .25),
+    inset 0 -2px 6px rgba(0, 0, 0, .35);
+  overflow: visible;
+  transform: translateY(0);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+/* Moldura cromada por trás do botão — efeito metal polido */
+.action-btn--glass-housing::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 20px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0px, rgba(255,255,255,.10) 1px, transparent 1px, transparent 4px),
+    linear-gradient(170deg,
+      #ffffff 0%,
+      #f4f5f7 10%,
+      #e8eaed 20%,
+      #d4d6da 35%,
+      #b8babd 45%,
+      #e0e2e5 55%,
+      #f8f9fa 65%,
+      #d8dade 75%,
+      #c4c6ca 85%,
+      #ffffff 100%);
+  border: 1px solid #e0e0e0;
+  box-shadow:
+    inset 0 2px 3px rgb(177 177 177 / 60%),
+    inset 0 -4px 6px rgb(62 62 62 / 45%),
+    0 18px 36px rgba(0, 0, 0, .28),
+    0 8px 16px rgb(100 100 100 / 38%);
+  z-index: -1;
+  pointer-events: none;
+}
+.action-btn--glass-housing:active {
+  transform: translateY(4px);
+  border-color: rgba(0, 0, 0, .6);
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, .55),
+    inset 0 -1px 0 rgba(255, 255, 255, .1),
+    0 1px 2px rgba(0, 0, 0, .2);
+}
+.action-btn--glass-housing::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.action-btn__face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .45);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .3),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  overflow: hidden;
+}
+
+/* Stop — face cromada com borda vermelha */
+.action-btn__face--stop {
+  background: linear-gradient(165deg, #d5d5d5 0%, #dcdcdc 45%, #cfd3d6 100%);
+  border: 2px solid rgba(200, 30, 30, .85);
+  border-top-color: rgba(230, 50, 50, .7);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .3),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .12),
+    0 0 8px rgba(220, 40, 40, .25);
+}
+
+/* Start — face cromada com borda verde */
+.action-btn__face--start {
+  background: linear-gradient(165deg, #ccc8c8 0%, #d9d9d9 45%, #cfd3d6 100%);
+  border: 2px solid rgba(20, 160, 70, .85);
+  border-top-color: rgba(40, 200, 100, .7);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .3),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .12),
+    0 0 8px rgba(40, 200, 100, .25);
+}
+
+/* ================================================================
+   Maintenance Mode Overlay
+   ================================================================ */
+.maintenance-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(220, 225, 230, .88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  backdrop-filter: blur(4px) saturate(80%);
+  -webkit-backdrop-filter: blur(4px) saturate(80%);
+}
+.maintenance-overlay__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 48px 64px;
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
+  border: 1px solid rgba(160, 168, 176, .4);
+}
+.maintenance-overlay__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  box-shadow:
+    0 5px 15px rgba(15, 23, 42, .18),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  color: var(--text-primary);
+}
+.maintenance-overlay__title {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+.maintenance-overlay__subtitle {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: -8px;
+}
+.maintenance-overlay__actions {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 16px;
+}
+
+/* ---- Dial card alert icon (Shift+!/@/#/$) ---- */
+.dial-card__alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: -160px;
+  margin-left: -64px;
+  z-index: 9999 !important;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dialAlertBlink 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+.dial-card__alert svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(207, 31, 37, .55));
+}
+@keyframes dialAlertBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(.9); }
+}
+
+/* Connectivity scroll buttons — copied from boot.css so they work in the main app */
+.lang-scroll-btn {
+  width: 80px;
+  height: 80px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f3f4f5 0%, #c7cacd 100%);
+  border: 1px solid #82888f;
+  border-radius: 10px;
+  box-shadow:
+    0 5px 10px rgba(15, 23, 42, .22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+  transition: transform .08s ease, box-shadow .08s ease;
+  cursor: pointer;
+}
+.lang-scroll-btn:active:not(.is-disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, .15),
+    inset 0 2px 0 rgba(255, 255, 255, .8),
+    inset 0 -2px 4px rgba(0, 0, 0, .12);
+}
+.lang-scroll-btn.is-disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+.lang-scroll-face {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #d5d5d5 0%, #eef0f1 45%, #cfd3d6 100%);
+  border: 1px solid rgba(0, 0, 0, .35);
+  border-top-color: rgba(0, 0, 0, .25);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, .28),
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 -2px 4px rgba(0, 0, 0, .1);
+}

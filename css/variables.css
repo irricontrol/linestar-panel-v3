@@ -1,0 +1,92 @@
+/**
+ * SmartTouch — design tokens.
+ * Single source of truth for colors, radii, and fonts used across the panel.
+ * Change a value here instead of hunting for hardcoded hex codes in JS.
+ */
+:root {
+  /* App shell */
+  --bg-app-1: #f3faf6;
+  --bg-app-2: #eef1f3;
+  --bg-app-3: #e7f0ea;
+  --bg-nav: #dde2e6;
+  --border-nav: #c3c9ce;
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --surface-muted: #f1f3f5;
+  --surface-track: #eef1f3;
+  --border: #c7ccd0;
+  --border-light: #e2e8f0;
+
+  /* Text */
+  --text-primary: #1a1d1f;
+  --text-secondary: #4f4f4f;
+  --text-muted: #5b6167;
+  --text-faint: #767c82;
+  --text-disabled: #8a9096;
+
+  /* Accents */
+  --accent-blue: #2f7de1;
+  --accent-green: #1f9d4c;
+  --accent-green-dark: #177a3a;
+  --accent-green-light: #4ade80;
+  --accent-red: #ef4444;
+  --accent-red-dark: #c81e30;
+  --accent-amber: #a15c00;
+  --accent-blue-irrig: #4f7cff;
+  --accent-brown-dry: #54341c;
+
+  /* Switch (industrial two-state) */
+  --switch-active-from: #4ade80;
+  --switch-active-to: #16a34a;
+  --switch-inactive-from: #e2e5e8;
+  --switch-inactive-to: #d3d7db;
+  --switch-icon-inactive: #b7bcc2;
+  --switch-dot-inactive: #8a9096;
+
+  /* Geometry */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* Type */
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-status: 'Outfit', sans-serif;
+
+  /* Touch targets */
+  --nav-btn-size: 88px;
+  --field-height: 52px;
+  --field-height-lg: 66px;
+}
+
+/**
+ * Dark mode — first pass. Toggled via Config → System → Theme
+ * (data-action="cycle-theme"), which stamps data-theme="dark" on <html>.
+ * Only the shared tokens are redefined here; a lot of the "metallic"
+ * glass effects added later use their own hardcoded rgba() values
+ * (frosted panels, chrome text, colored bezels) instead of these
+ * tokens, so those will still need their own dark-mode pass on top of
+ * this — this covers the base surfaces/text/backgrounds everything
+ * else is built on.
+ */
+:root[data-theme="dark"] {
+  --bg-app-1: #0b0d10;
+  --bg-app-2: #06070a;
+  --bg-app-3: #08090c;
+  --bg-nav: #0d1013;
+  --border-nav: #262b30;
+
+  --surface: #101316;
+  --surface-muted: #16191d;
+  --surface-track: #16191d;
+  --border: #2a2f34;
+  --border-light: #1c2024;
+
+  --text-primary: #f0f2f3;
+  --text-secondary: #c7ccd0;
+  --text-muted: #9aa1a7;
+  --text-faint: #7c848a;
+  --text-disabled: #565d63;
+}
