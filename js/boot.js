@@ -18,10 +18,19 @@
   const appTopbar        = document.getElementById('boot-topbar');
 
   let languageScreenShown = false;
+  let videoLoadTimeout = null;
+
+  function markVideoPlaying() {
+    if (videoLoadTimeout) {
+      clearTimeout(videoLoadTimeout);
+      videoLoadTimeout = null;
+    }
+  }
 
   function showLanguageScreen() {
     if (languageScreenShown) return;
     languageScreenShown = true;
+    if (videoLoadTimeout) clearTimeout(videoLoadTimeout);
     if (bootVideo) bootVideo.pause();
     if (bootVideoScreen) {
       bootVideoScreen.classList.remove('is-visible');
@@ -32,6 +41,10 @@
 
   if (bootVideo) {
     bootVideo.addEventListener('ended', showLanguageScreen);
+    bootVideo.addEventListener('playing', markVideoPlaying);
+    bootVideo.addEventListener('timeupdate', function () {
+      if (!bootVideo.paused && bootVideo.currentTime > 0) markVideoPlaying();
+    });
     bootVideo.addEventListener('error', function () {
       console.error('Boot intro video could not be loaded; continuing to language selection.');
       showLanguageScreen();
@@ -42,9 +55,16 @@
   if (bootVideo && bootVideoScreen) {
     bootVideoScreen.style.display = 'flex';
     bootVideoScreen.classList.add('is-visible');
+    videoLoadTimeout = setTimeout(function () {
+      if (bootVideo.paused || bootVideo.readyState < 2) {
+        console.error('Boot intro video did not start in time; continuing to language selection.');
+        showLanguageScreen();
+      }
+    }, 12000);
     const playRequest = bootVideo.play();
-    if (playRequest && typeof playRequest.catch === 'function') {
-      playRequest.catch(function (error) {
+    if (!bootVideo.paused && bootVideo.currentTime > 0) markVideoPlaying();
+    if (playRequest && typeof playRequest.then === 'function') {
+      playRequest.then(markVideoPlaying).catch(function (error) {
         console.error('Boot intro video playback failed; continuing to language selection.', error);
         showLanguageScreen();
       });
