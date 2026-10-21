@@ -109,30 +109,11 @@
         </div>
       </div>
 
-      <!-- 1. BOOT SCREEN -->
-      <div class="boot-base is-visible" id="boot-screen">
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-        <div class="boot-particle"></div>
-
-        <div class="boot-scanline"></div>
-
-        <div class="boot-logo">
-          <img src="assets/icons/Logo-Bauer-Group-60.svg" alt="Bauer Group">
-        </div>
-
-        <div class="boot-title">SmartConnect V3</div>
-        <div class="boot-version">V 3.0.1 &middot; BUILD 2026.08.19</div>
-
-        <div class="boot-progress">
-          <div class="boot-progress__bar"></div>
-        </div>
-        <div class="boot-status" id="boot-status">Initializing...</div>
+      <!-- 1. BOOT VIDEO -->
+      <div class="boot-video-screen is-visible" id="boot-video-screen">
+        <video id="boot-intro-video" autoplay muted playsinline preload="auto" aria-label="SmartConnect V3 introduction">
+          <source src="assets/icons/boot_smartconnect_v3.mp4" type="video/mp4">
+        </video>
       </div>
 
       <!-- 2. LANGUAGE SELECTOR -->

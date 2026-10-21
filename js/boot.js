@@ -1,14 +1,14 @@
 /**
  * SmartConnect V3 — Boot sequence controller.
- * Handles the initialization flow: Boot -> Language -> Standby -> App.
+ * Handles the initialization flow: Intro video -> Language -> Standby -> App.
  */
 
 (function () {
   'use strict';
 
   /* ─── Elements ─── */
-  const bootEl           = document.getElementById('boot-screen');
-  const statusEl         = document.getElementById('boot-status');
+  const bootVideoScreen  = document.getElementById('boot-video-screen');
+  const bootVideo        = document.getElementById('boot-intro-video');
   const langScreen       = document.getElementById('lang-screen');
   const setupModeScreen  = document.getElementById('setup-mode-screen');
   const equipScreen      = document.getElementById('equipment-screen');
@@ -17,26 +17,42 @@
   const appNav           = document.getElementById('boot-nav');
   const appTopbar        = document.getElementById('boot-topbar');
 
-  /* ─── Boot status sequence ─── */
-  const STEPS = [
-    { t: 2200, txt: 'Loading modules...' },
-    { t: 3500, txt: 'Calibrating sensors...' },
-    { t: 4800, txt: 'System ready' },
-  ];
+  let languageScreenShown = false;
 
-  STEPS.forEach(function (s) {
-    setTimeout(function () {
-      if (statusEl) statusEl.textContent = s.txt;
-    }, s.t);
-  });
-
-  /* ─── Boot -> Language ─── */
-  setTimeout(function () {
-    if (!bootEl) return;
-    bootEl.classList.add('is-done');
-    bootEl.style.display = 'none';
+  function showLanguageScreen() {
+    if (languageScreenShown) return;
+    languageScreenShown = true;
+    if (bootVideo) bootVideo.pause();
+    if (bootVideoScreen) {
+      bootVideoScreen.classList.remove('is-visible');
+      bootVideoScreen.style.display = 'none';
+    }
     if (langScreen) langScreen.classList.add('is-visible');
-  }, 5500);
+  }
+
+  if (bootVideo) {
+    bootVideo.addEventListener('ended', showLanguageScreen);
+    bootVideo.addEventListener('error', function () {
+      console.error('Boot intro video could not be loaded; continuing to language selection.');
+      showLanguageScreen();
+    });
+  }
+
+  /* ─── Intro video -> Language ─── */
+  if (bootVideo && bootVideoScreen) {
+    bootVideoScreen.style.display = 'flex';
+    bootVideoScreen.classList.add('is-visible');
+    const playRequest = bootVideo.play();
+    if (playRequest && typeof playRequest.catch === 'function') {
+      playRequest.catch(function (error) {
+        console.error('Boot intro video playback failed; continuing to language selection.', error);
+        showLanguageScreen();
+      });
+    }
+  } else {
+    console.error('Boot intro video elements are missing; continuing to language selection.');
+    showLanguageScreen();
+  }
 
   /* ─── Language list scroll ─── */
   const langList = document.getElementById('lang-list');
