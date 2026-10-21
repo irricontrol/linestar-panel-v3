@@ -90,7 +90,8 @@
       <div class="usb-transfer-overlay" id="usb-transfer-overlay" style="display:none;">
         <div class="usb-transfer-body">
           <div class="usb-transfer-icon">
-            <img src="assets/icons/usb.svg" width="90" height="90" alt="" style="opacity:.75;">
+            <img id="transfer-usb-icon" src="assets/icons/usb.svg" width="90" height="90" alt="" style="opacity:.75;">
+            <div id="transfer-config-icon" class="config-loader-spinner" style="display:none;" role="status" aria-label="Loading configuration"></div>
           </div>
           <div class="usb-transfer-status" id="usb-transfer-status">Detecting USB device...</div>
           <div class="usb-transfer-sub" id="usb-transfer-sub">SmartConnect V3</div>
@@ -329,6 +330,7 @@
             <div class="section-tab btn-touch is-active" data-tab="general">General</div>
             <div class="section-tab btn-touch" data-tab="pumping">Pumping</div>
             <div class="section-tab btn-touch" data-tab="connectivity">Connectivity</div>
+            <div class="section-tab btn-touch" data-tab="save">Save</div>
           </div>
 
           <div class="dual-toggle__housing btn-touch" data-action="setup-hub-right" aria-label="Next" style="width:90px;height:80px;display:flex;align-items:center;justify-content:center;">
@@ -962,6 +964,15 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Save panel -->
+        <div class="setup-tab-panel" data-tab-panel="save" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;">
+          <div style="font-size:30px;font-weight:700;color:#4e5c47;">Save parameters</div>
+          <div style="font-size:20px;color:#4e5c47;text-align:center;">Save your configuration and continue to the configured pivot.</div>
+          <div class="clear-screen-btn btn-touch" data-action="boot-save-parameters" aria-label="Save parameters and continue to the configured pivot">
+            <div class="clear-screen-btn__face">Save parameters and continue</div>
           </div>
         </div>
 

@@ -112,7 +112,11 @@
         const usbBar = document.getElementById('usb-transfer-progress-bar');
         const usbPct = document.getElementById('usb-transfer-pct');
         const usbStatus = document.getElementById('usb-transfer-status');
+        const usbIcon = document.getElementById('transfer-usb-icon');
+        const configIcon = document.getElementById('transfer-config-icon');
 
+        if (usbIcon) usbIcon.style.display = '';
+        if (configIcon) configIcon.style.display = 'none';
         if (usbOverlay) {
           usbOverlay.style.display = 'flex';
         }
@@ -183,7 +187,7 @@
   }
   /* ─── Setup screen: section tabs (horizontal) ─── */
   if (setupScreen) {
-    const tabs = Array.from(setupScreen.querySelectorAll('.section-tab'));
+    const tabs = Array.from(setupScreen.querySelectorAll('.section-tab[data-tab]'));
     const panels = Array.from(setupScreen.querySelectorAll('.setup-tab-panel'));
 
     function activateTab(target) {
@@ -201,7 +205,7 @@
       }
     }
 
-    setupScreen.querySelectorAll('.section-tab').forEach(function (tab) {
+    setupScreen.querySelectorAll('.section-tab[data-tab]').forEach(function (tab) {
       tab.addEventListener('click', function () {
         activateTab(tab.getAttribute('data-tab'));
       });
@@ -471,6 +475,52 @@
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       const action = btn.getAttribute('data-action');
+
+      if (action === 'boot-save-parameters') {
+        const usbOverlay = document.getElementById('usb-transfer-overlay');
+        const usbBar = document.getElementById('usb-transfer-progress-bar');
+        const usbPct = document.getElementById('usb-transfer-pct');
+        const usbStatus = document.getElementById('usb-transfer-status');
+        const usbSub = document.getElementById('usb-transfer-sub');
+        const usbLabel = usbOverlay && usbOverlay.querySelector('.usb-transfer-label');
+        const usbIcon = document.getElementById('transfer-usb-icon');
+        const configIcon = document.getElementById('transfer-config-icon');
+
+        if (!usbOverlay || !usbBar || !usbPct || !usbStatus || !usbSub || !usbLabel || !usbIcon || !configIcon) {
+          console.error('Cannot start configuration loader: required overlay elements are missing.');
+          return;
+        }
+
+        usbIcon.style.display = 'none';
+        configIcon.style.display = '';
+        usbBar.style.width = '0%';
+        usbPct.textContent = '0%';
+        usbStatus.textContent = 'Saving configuration...';
+        usbSub.textContent = 'Preparing configured pivot';
+        usbLabel.textContent = 'SAVE CONFIGURATION';
+        usbOverlay.style.display = 'flex';
+
+        const SAVE_STEPS = [
+          { pct: 25, txt: 'Validating parameters...', sub: 'Checking configuration', delay: 400 },
+          { pct: 55, txt: 'Loading pivot configuration...', sub: 'Applying saved parameters', delay: 1100 },
+          { pct: 82, txt: 'Starting SmartConnect V3...', sub: 'Preparing your configured pivot', delay: 1900 },
+          { pct: 100, txt: 'Configuration ready', sub: 'SmartConnect V3', delay: 2700 },
+        ];
+
+        SAVE_STEPS.forEach(function (step) {
+          setTimeout(function () {
+            usbBar.style.width = step.pct + '%';
+            usbPct.textContent = step.pct + '%';
+            usbStatus.textContent = step.txt;
+            usbSub.textContent = step.sub;
+          }, step.delay);
+        });
+
+        setTimeout(function () {
+          window.location.href = 'index.html';
+        }, 3300);
+        return;
+      }
 
       /* Pumping → Pressure Reading: cycle Off / By pressure switch / By pressure sensor */
       if (action === 'cycle-pumping-pressure-reading') {
