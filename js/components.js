@@ -1333,5 +1333,191 @@ ST.components = (function () {
       </div>`;
   }
 
+  /* ---------------------------------------------------------------- Linear Dial */
+
+  /**
+   * Center-line / linear-move irrigation track.
+   * Replaces the circular pivot dial with a horizontal track:
+   * 0' on the left, max distance on the right, tower icon sliding along it.
+   *
+   * @param {object} o
+   * @param {number} o.currentPosition  0..100 percent along the track.
+   * @param {number} [o.sectorStart=0]  Irrigated sector left bound, 0..100.
+   * @param {number} [o.sectorEnd=0]    Irrigated sector right bound, 0..100.
+   * @param {string} o.modeColor        Sector fill colour.
+   * @param {boolean} [o.showSector=true]
+   * @param {boolean} [o.showStartLine]
+   * @param {boolean} [o.showEndLine]
+   * @param {string} [o.direction]      'Forward' = left→right, 'Reverse' = right→left.
+   * @param {number} [o.segmentCount=1]
+   * @param {boolean} [o.showSegmentArea]
+   * @param {string} [o.segmentClickAction]
+   * @param {number} [o.size]
+   */
+  function linearDial(o) {
+    const glowId = `pivot-dial-glow-${++pivotDialClipSeq}`;
+    const shadowId = `pivot-dial-shadow-${++pivotDialClipSeq}`;
+
+    /* Track geometry — mapped into a 600×600 viewBox (same as pivotDial)
+       so the card stays the same square size as the circular dial. */
+    const vbW = 600, vbH = 600;
+    const trackW = 480, trackH = 180;
+    const trackX = (vbW - trackW) / 2;   // 60
+    const trackR = trackX + trackW;      // 530
+    const trackY = (vbH - trackH) / 2;   // 210
+    const trackB = trackY + trackH;      // 390
+    const cyTrack = (trackY + trackB) / 2; // 300
+
+    /* Accept currentPosition directly (0..100) or fall back from
+       currentAngle (0..360) so existing callers need no edits. */
+    const rawPos = o.currentPosition != null ? Number(o.currentPosition) : (Number(o.currentAngle) || 0) / 3.6;
+    const pos = Math.max(0, Math.min(100, rawPos));
+    const markerX = trackX + (pos / 100) * trackW;
+
+    /* Convert sector angles (0..360) to linear percent if caller passes angles */
+    const rawStart = o.sectorStart != null ? Number(o.sectorStart) : 0;
+    const rawEnd   = o.sectorEnd   != null ? Number(o.sectorEnd)   : 0;
+    const segStart = Math.max(0, Math.min(100, rawStart <= 360 ? rawStart / 3.6 : rawStart));
+    const segEnd   = Math.max(0, Math.min(100, rawEnd   <= 360 ? rawEnd   / 3.6 : rawEnd));
+
+    const clip = (frag) => {
+      const cid = `trackClip-${++pivotDialClipSeq}`;
+      return `<clipPath id="${cid}"><rect x="${trackX}" y="${trackY}" width="${trackW}" height="${trackH}" rx="6"/></clipPath><g clip-path="url(#${cid})">${frag}</g>`;
+    };
+
+    const xAt = (v) => trackX + (Math.max(0, Math.min(100, Number(v) || 0)) / 100) * trackW;
+
+    /* Segment area (up to 4 vertical bars, same colours as pivot) */
+    let segmentArea = '';
+    if (o.showSegmentArea) {
+      const count = Math.max(1, Math.round(Number(o.segmentCount) || 1));
+      const colors = ST.config.segmentColors;
+      const segStep = trackW / count;
+      const opacity = o.segmentAreaOpacity != null ? o.segmentAreaOpacity : 0.6;
+      for (let i = 0; i < count; i++) {
+        const sx = trackX + i * segStep;
+        const sw = segStep;
+        const clickClass = o.segmentClickAction ? ' btn-touch' : '';
+        const clickAttr = o.segmentClickAction ? ` data-action="${o.segmentClickAction}" data-value="${i}"` : '';
+        segmentArea += `<rect class="segment-wedge${clickClass}"${clickAttr} x="${fixed(sx)}" y="${trackY}" width="${fixed(sw)}" height="${trackH}" fill="${colors[i % colors.length]}" fill-opacity="${opacity}"/>`;
+      }
+      segmentArea = clip(segmentArea);
+    }
+
+    /* White edge strips (top + bottom) — same as linestar-panel's sectorWhiteBase */
+    const edgeH = trackH * 0.16;
+    let sectorWhiteBase = '';
+    if (!o.hideWhiteBase) {
+      sectorWhiteBase = `
+        <rect x="${trackX}" y="${trackY}" width="${trackW}" height="${fixed(edgeH)}" fill="#ffffff" fill-opacity="0.18" filter="url(#${glowId})"/>
+        <rect x="${trackX}" y="${trackY}" width="${trackW}" height="${fixed(edgeH)}" fill="#ffffff" fill-opacity="0.22"/>
+        <rect x="${trackX}" y="${fixed(trackY + trackH - edgeH)}" width="${trackW}" height="${fixed(edgeH)}" fill="#ffffff" fill-opacity="0.18" filter="url(#${glowId})"/>
+        <rect x="${trackX}" y="${fixed(trackY + trackH - edgeH)}" width="${trackW}" height="${fixed(edgeH)}" fill="#ffffff" fill-opacity="0.22"/>`;
+    }
+
+    /* Irrigated sector bands on top/bottom edges only (not full fill) */
+    const modeColor = o.modeColor || ST.config.segmentColors[0];
+    const hasSector = o.sectorStart != null && o.sectorEnd != null;
+    let sectorBand = '';
+    if (o.showSector !== false && hasSector) {
+      const bx0 = xAt(segStart);
+      const bx1 = xAt(segEnd);
+      const bx = Math.min(bx0, bx1);
+      const bw = Math.abs(bx1 - bx0);
+      sectorBand = clip(`
+        <rect x="${fixed(bx)}" y="${trackY}" width="${fixed(bw)}" height="${fixed(edgeH)}" fill="${modeColor}" fill-opacity="0.7" filter="url(#${glowId})"/>
+        <rect x="${fixed(bx)}" y="${trackY}" width="${fixed(bw)}" height="${fixed(edgeH)}" fill="${modeColor}" fill-opacity="0.95"/>
+        <rect x="${fixed(bx)}" y="${fixed(trackY + trackH - edgeH)}" width="${fixed(bw)}" height="${fixed(edgeH)}" fill="${modeColor}" fill-opacity="0.7" filter="url(#${glowId})"/>
+        <rect x="${fixed(bx)}" y="${fixed(trackY + trackH - edgeH)}" width="${fixed(bw)}" height="${fixed(edgeH)}" fill="${modeColor}" fill-opacity="0.95"/>`);
+    }
+
+    /* Direction arrow (chevron) */
+    const reverse = o.direction === 'Reverse';
+    const chevSize = 34;
+    const chevLength = chevSize * 2;
+    const chevMidY = trackY + trackH / 2;
+    const chevShift = 7 * (reverse ? -1 : 1);
+    const chevBaseX = markerX + chevShift;
+    const chevPath = reverse
+      ? `M${fixed(chevBaseX - chevLength)},${chevMidY} L${fixed(chevBaseX)},${chevMidY - chevSize} L${fixed(chevBaseX)},${chevMidY + chevSize} Z`
+      : `M${fixed(chevBaseX + chevLength)},${chevMidY} L${fixed(chevBaseX)},${chevMidY - chevSize} L${fixed(chevBaseX)},${chevMidY + chevSize} Z`;
+
+    /* Boundary dashed lines */
+    let boundaryLines = '';
+    if (o.showStartLine && hasSector) {
+      const sx = xAt(segStart);
+      boundaryLines += `<line x1="${fixed(sx)}" y1="${trackY - 8}" x2="${fixed(sx)}" y2="${trackY + trackH + 8}" stroke="#22c55e" stroke-width="4" stroke-dasharray="7 6" stroke-linecap="round"/>`;
+    }
+    if (o.showEndLine) {
+      const endPos = o.endLineAngle != null ? o.endLineAngle : o.sectorEnd;
+      if (endPos != null) {
+        const ex = xAt(endPos <= 360 ? endPos / 3.6 : endPos);
+        boundaryLines += `<line x1="${fixed(ex)}" y1="${trackY - 30}" x2="${fixed(ex)}" y2="${trackY + trackH + 30}" stroke="#ef4444" stroke-width="5" stroke-dasharray="7 6" stroke-linecap="round"/>`;
+      }
+    }
+
+    /* Position badge above marker */
+    const positionBadge = o.showAngleBadge
+      ? (() => {
+          const bw = 132;
+          const bh = 48;
+          const by = trackY - 84;
+          const bx = Math.min(Math.max(markerX - bw / 2, trackX), trackX + trackW - bw);
+          return `<rect x="${fixed(bx - 6)}" y="${fixed(by - 6)}" width="${bw + 12}" height="${bh + 12}" rx="12" fill="#ffffff" fill-opacity="0.2" filter="url(#${glowId})"/>
+            <rect x="${fixed(bx)}" y="${fixed(by)}" width="${bw}" height="${bh}" rx="8" fill="#5a5e68" fill-opacity="0.92" stroke="#ffffff" stroke-width="1.5"/>
+            <text x="${fixed(bx + bw / 2)}" y="${fixed(by + bh / 2)}" fill="#ffffff" fill-opacity="1" font-size="25" font-weight="900" font-family="IBM Plex Sans" text-anchor="middle" dominant-baseline="middle">${Math.round(pos)} m</text>`;
+        })()
+      : '';
+
+    /* Scale labels */
+    const maxFt = 2200;
+    const lengthLabel = `${maxFt} m`;
+
+    const size = o.size || 470;
+
+    return `
+      <svg class="dial-card__svg linear-track__svg" width="${size}" height="${size}" viewBox="0 0 600 600">
+        <defs>
+          <filter id="${glowId}" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1100" height="600">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="${shadowId}" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1100" height="600">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4"/>
+          </filter>
+        </defs>
+
+        <!-- White rounded track background -->
+        <rect x="${trackX}" y="${trackY}" width="${trackW}" height="${trackH}" rx="6" fill="#ffffff" stroke="#ffffff" stroke-width="4"/>
+
+        ${segmentArea}
+        ${sectorWhiteBase}
+        ${sectorBand}
+
+        <!-- Track outline (re-drawn on top so borders stay crisp) -->
+        <rect x="${trackX}" y="${trackY}" width="${trackW}" height="${trackH}" rx="6" fill="none" stroke="#ffffff" stroke-width="4"/>
+
+        <!-- Position marker line + chevron -->
+        ${o.hideArrow ? '' : `
+        <line x1="${fixed(markerX)}" y1="${trackY - 4}" x2="${fixed(markerX)}" y2="${trackY + trackH + 4}" stroke="#1a1d1f" stroke-opacity="0.55" stroke-width="9" stroke-linecap="round" filter="url(#${shadowId})"/>
+        <path d="${chevPath}" fill="#1a1d1f" fill-opacity="0.55" filter="url(#${shadowId})"/>
+        <line x1="${fixed(markerX)}" y1="${trackY - 4}" x2="${fixed(markerX)}" y2="${trackY + trackH + 4}" stroke="#ffffff" stroke-width="7" stroke-linecap="round" filter="url(#${glowId})"/>
+        <path d="${chevPath}" fill="#ffffff" filter="url(#${glowId})"/>`}
+
+        ${boundaryLines}
+        ${positionBadge}
+
+        <!-- Scale labels -->
+        <text x="${trackX}" y="${trackY + trackH + 58}" fill="#4b5157" font-size="32" font-weight="600" font-family="IBM Plex Sans" text-anchor="start">0 m</text>
+        <text x="${trackX + trackW}" y="${trackY + trackH + 58}" fill="#4b5157" font-size="32" font-weight="600" font-family="IBM Plex Sans" text-anchor="end">${lengthLabel}</text>
+      </svg>`;
+  }
+
+  /* Redirect pivotDial to the linear representation for center-line systems */
+  const _originalPivotDial = pivotDial;
+  pivotDial = function (o) {
+    return linearDial(o);
+  };
+
   return { pivotDial, vriDial, dialCard, field, checkbox, togglePill, twoStateSwitch, dualToggle, glassPair, exclusiveToggle, kpiCard, telemetryTile, operationSummary, keypad, keypadText, datePicker, KEYPAD_LABELS, hubBar, diagTableScroll, segmentPicker, segmentEditPopup, pinScreen };
 })();
