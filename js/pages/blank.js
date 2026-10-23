@@ -195,12 +195,12 @@ ST.pages.blank = (function () {
                 label: 'Stop Mode',
                 items: [
                   {
-                    icon: icons.byRounds({ size: 96, color: 'currentColor', strokeWidth: 2 }),
+                    icon: icons.byRounds({ size: 84, color: 'currentColor', strokeWidth: 2 }),
                     action: 'toggle-stop-rounds',
                     active: s.stopMode === 'By Rounds',
                   },
                   {
-                    icon: icons.byAngle({ size: 56, color: 'currentColor', strokeWidth: 2 }),
+                    icon: icons.byAngle({ size: 108, color: 'currentColor', strokeWidth: 2 }),
                     action: 'toggle-stop-angle',
                     active: s.stopMode === 'By Angle',
                   },
